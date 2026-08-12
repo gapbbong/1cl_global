@@ -20,6 +20,7 @@ function validateStudentId(value){let length=Number(localStorage.getItem('global
 function adjustStudentIdLength(n){let e=document.getElementById('studentIdLength');if(!e)return;e.value=Math.max(1,Math.min(20,Number(e.value||4)+n))}
 function ensureStudentIdField(){if(page!=='school'||document.getElementById('studentIdLength'))return;let grid=document.querySelector('.school-grid');if(!grid)return;let box=document.createElement('div');box.className='field';box.innerHTML='<label>학번 자리수</label><div class="class-counter"><button class="ghost" type="button" onclick="adjustStudentIdLength(-1)">−</button><input id="studentIdLength" type="number" min="1" max="20" value="'+(localStorage.getItem('globalhub.studentIdLength')||4)+'" readonly><button class="ghost" type="button" onclick="adjustStudentIdLength(1)">＋</button></div>';grid.insertBefore(box,grid.children[6]||null)}
 const renderWithStudentIdField=render;render=function(){renderWithStudentIdField();ensureStudentIdField()};
+render();
 </script>
 <script>new MutationObserver(()=>{document.querySelector('.main').style.marginRight=document.getElementById('previewPanel').classList.contains('open')?'30%':'0'}).observe(document.getElementById('previewPanel'),{attributes:true,attributeFilter:['class']});</script>
 </html><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script><script src="integration.js"></script>
