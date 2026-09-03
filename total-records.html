@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기록 모아보기</title>
+    <link rel="stylesheet" href="src/css/main.css">
+    <link rel="stylesheet" href="src/css/total-records.css?v=1.63">
+
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vqru6iwnq8");
+</script>
+</head>
+
+<body>
+    <header class="header-row">
+        <button class="btn-back" onclick="location.href='index.html'"></button>
+        <div class="header-title-wrapper">
+            <h2 id="page-title">기록 모아보기</h2>
+            <span id="total-count" class="header-total-count">0</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="stats-section">
+            <button id="sort-num" class="sort-btn active">학번순</button>
+            <button id="sort-time" class="sort-btn">최신순</button>
+            <button id="sort-my-num" class="sort-btn" style="display:none;">우리반 학번순</button>
+            <button id="sort-my-time" class="sort-btn" style="display:none;">우리반 최신순</button>
+        </div>
+
+        <div id="log-container" class="log-container">
+            <!-- 기록 카드들이 여기에 렌더링됩니다 -->
+            <div class="loading-msg">데이터를 가져오는 중입니다...</div>
+        </div>
+    </div>
+
+    <!-- 학생 상세 팝업 레이어 (v4.80 추가) -->
+    <div id="overlay" class="popup-overlay"></div>
+    <div id="popup"></div>
+
+    <script type="module" src="src/js/total-records.js"></script>
+</body>
+
+</html>

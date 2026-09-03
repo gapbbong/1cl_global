@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>학급 분석 - OneClass</title>
+    <link rel="stylesheet" href="src/css/main.css">
+    <link rel="stylesheet" href="src/css/class-analysis.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vqru6iwnq8");
+</script>
+</head>
+
+<body>
+    <div class="analysis-container">
+        <!-- 상단 헤더 -->
+        <header class="analysis-header">
+            <button type="button" class="btn btn-back" onclick="history.back()"></button>
+            <div class="header-center">
+                <select id="class-selector" class="class-title-select"></select>
+                <h1 id="class-title" class="hidden">반 분석</h1>
+            </div>
+            <div class="header-right">
+                <span style="font-size: 0.8rem; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px; margin-top: 5px; display: inline-block;">v1.60</span>
+            </div>
+        </header>
+
+        <!-- 권한 안내 (비담임 교사용) -->
+        <div id="permission-notice" class="notice-card permission-notice hidden">
+            <p>🔒 학급 전체 통계 모드</p>
+            <p class="sub">담임 선생님이 아니시군요! 학생 개별 정보(기록, 실명 분석 등)를 제외한 통계 요약만 제공됩니다.</p>
+        </div>
+
+        <main class="analysis-main" id="analysis-content">
+            <!-- 0. 우리반 기록 전체 보기 섹션 -->
+            <section id="records-section" class="analysis-section records-card">
+                <div class="section-title">
+                    <h2>📝 학급 기록 전체</h2>
+                    <div class="sort-controls header-sort">
+                        <button id="sort-by-id" class="sort-btn">학번순</button>
+                        <button id="sort-by-date" class="sort-btn active">최신순</button>
+                    </div>
+                </div>
+                <div id="class-records-container" class="class-records-content">
+                    <div id="class-records-list" class="records-log-list">
+                        <!-- 기록 아이템들이 동적으로 추가됨 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 1. 설문 제출 현황 섹션 -->
+            <section class="analysis-section status-card">
+                <div class="section-title">
+                    <h2>📋 설문 제출 현황</h2>
+                    <span id="total-status" class="status-badge">확인 중...</span>
+                </div>
+                <div class="status-grid">
+                    <div class="status-item done">
+                        <span class="label">제출 완료</span>
+                        <span id="done-count" class="count">0</span>
+                    </div>
+                    <div class="status-item pending">
+                        <span class="label">미제출</span>
+                        <span id="pending-count" class="count">0</span>
+                    </div>
+                </div>
+                <div id="pending-list-container" class="pending-list hidden">
+                    <h3>미제출자 명단</h3>
+                    <div id="pending-names" class="name-tags"></div>
+                </div>
+            </section>
+
+            <!-- 2. 미완료시 안내 문구 (동적으로 제어) -->
+            <div id="incomplete-notice" class="notice-card hidden">
+                <p>⚠️ 아직 모든 학생이 설문을 완료하지 않았습니다.</p>
+                <p class="sub">모두 완료되면 더 정확한 정보가 제공됩니다. 그래도 분석을 진행할까요?</p>
+                <button id="force-analyze-btn" class="primary-btn">그래도 분석하기</button>
+            </div>
+
+            <div id="analysis-results" class="hidden">
+                <!-- 3. AI 기반 추천/분류 섹션 -->
+                <section class="analysis-section ai-analysis">
+                    <div class="section-title">
+                        <h2>🧠 AI 학급 분석</h2>
+                    </div>
+
+                    <!-- 반장 추천 -->
+                    <div class="ai-card leadership-card">
+                        <h3>🚩 리더십 & 반장 추천</h3>
+                        <div class="btn-group">
+                            <button class="toggle-btn active" data-count="3">TOP 3</button>
+                            <button class="toggle-btn" data-count="5">TOP 5</button>
+                        </div>
+                        <div id="leadership-list" class="ai-list"></div>
+                    </div>
+
+                    <!-- 상담 우선순위 -->
+                    <div class="ai-card counsel-priority-card">
+                        <h3>⚠️ 상담 시급도 분류</h3>
+                        <div class="priority-grid">
+                            <div class="priority-item level-4">
+                                <h4>집중 지원 (매우 높음)</h4>
+                                <div id="priority-l4" class="student-tags"></div>
+                            </div>
+                            <div class="priority-item level-3">
+                                <h4>관리 필요 (높음)</h4>
+                                <div id="priority-l3" class="student-tags"></div>
+                            </div>
+                            <div class="priority-item level-2">
+                                <h4>지속 관찰 (보통)</h4>
+                                <div id="priority-l2" class="student-tags"></div>
+                            </div>
+                            <div class="priority-item level-1">
+                                <h4>안정 (낮음)</h4>
+                                <div id="priority-l1" class="student-tags"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. 상세 통계 섹션 -->
+                <section id="stats-section" class="analysis-section stats-grid">
+                    <div class="section-title">
+                        <h2>📊 항목별 상세 통계</h2>
+                    </div>
+
+                    <!-- 1. 기본 정보 그룹 -->
+                    <div class="stat-card">
+                        <h3>👫 성별 분포</h3>
+                        <div id="stats-gender" class="chart-container"></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>🩸 혈액형</h3>
+                        <div id="stats-blood" class="chart-container"></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>🧠 MBTI 성향 (I vs E)</h3>
+                        <div id="stats-mbti-ei" class="chart-container"></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>🧩 MBTI 성향 (N vs S)</h3>
+                        <div id="stats-mbti-ns" class="chart-container"></div>
+                    </div>
+
+                    <!-- 2. 가족 및 생활 그룹 -->
+                    <div class="stat-card">
+                        <h3>👨‍👩‍👧‍👦 형제 관계</h3>
+                        <div id="stats-siblings" class="chart-container"></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>🏠 거주 가족</h3>
+                        <div id="stats-family" class="chart-container"></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>🐾 반려동물</h3>
+                        <div id="stats-pets" class="chart-container"></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>🚲 등교 수단</h3>
+                        <div id="stats-commute" class="chart-container"></div>
+                    </div>
+
+                    <!-- 3. 학습 및 진로 그룹 -->
+                    <div class="stat-card">
+                        <h3>🎓 졸업 후 진로</h3>
+                        <div id="stats-postgrad" class="chart-container"></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>⛪ 종교</h3>
+                        <div id="stats-religion" class="chart-container"></div>
+                    </div>
+                    <div class="stat-card wide">
+                        <h3>🏫 출신 중학교 TOP 5</h3>
+                        <div id="stats-schools" class="list-container"></div>
+                    </div>
+                    <div class="stat-card wide">
+                        <h3>🌈 나의 꿈 키워드</h3>
+                        <div id="stats-dreams" class="keyword-tags"></div>
+                    </div>
+
+                    <!-- 4. 취향 및 활동 그룹 -->
+                    <div class="stat-card wide">
+                        <h3>🎮 선호 게임 TOP 5</h3>
+                        <div id="stats-games" class="list-container"></div>
+                    </div>
+                    <div class="stat-card wide">
+                        <h3>🎨 취미 & 특기 키워드</h3>
+                        <div id="stats-hobbies" class="keyword-tags"></div>
+                    </div>
+                </section>
+        </main>
+
+        <!-- 로딩 오버레이 -->
+        <div id="loading-overlay" class="loading-overlay">
+            <div class="spinner"></div>
+            <p>데이터를 분석 중입니다...</p>
+        </div>
+    </div>
+
+    <!-- 스크립트 모듈 -->
+    <script type="module" src="src/js/class-analysis.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>학생 목록</title>
+  <link rel="stylesheet" href="src/css/main.css?v=5.08">
+  <link rel="stylesheet" href="src/css/stu-list.css?v=5.08">
+
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vqru6iwnq8");
+</script>
+</head>
+
+<body>
+  <div class="title-row">
+    <h2 id="class-title">반 정보</h2>
+    <div id="teacher-info" class="teacher-info"></div>
+  </div>
+
+  <div id="student-list" class="student-grid loading">📷</div>
+
+  <div id="overlay" onclick="closePopup()"></div>
+  <div id="popup"></div>
+
+  <button id="home-btn" title="메인으로">🏠</button>
+  <button id="print-btn" title="인쇄 및 내보내기" style="display: none;">🖨️</button>
+  <button id="contact-download-btn" title="연락처 저장" style="display: none;">☎️</button>
+
+  <div class="floating-controls">
+    <button id="prev-btn" title="이전 반">
+      <svg viewBox="0 0 24 24">
+        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg>
+    </button>
+    <button id="next-btn" title="다음 반">
+      <svg viewBox="0 0 24 24">
+        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+      </svg>
+    </button>
+  </div>
+
+  <script type="module" src="src/js/student.js?v=5.08"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>학생 현황 및 검색</title>
+  <link rel="stylesheet" href="src/css/main.css?v=5.08">
+  <link rel="stylesheet" href="src/css/search.css?v=5.08">
+
+  <script type="text/javascript">
+    (function (c, l, a, r, i, t, y) {
+      c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+      t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+      y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+    })(window, document, "clarity", "script", "vqru6iwnq8");
+  </script>
+</head>
+
+<body>
+  <button id="home-btn" title="메인으로" onclick="location.href='index.html'">🏠</button>
+  <h2>🔍 학생 현황 및 검색</h2>
+
+  <div class="search-container">
+    <form id="searchForm" class="search-form">
+      <select id="category">
+        <option value="이름" selected>이름</option>
+        <option value="학번">학번</option>
+        <option value="출신중">출신중</option>
+        <option value="학생폰">연락처</option>
+        <option value="집주소">주소</option>
+      </select>
+      <input type="text" id="keyword" placeholder="검색어 입력..." required />
+      <button type="submit">검색</button>
+    </form>
+  </div>
+
+  <div id="result-count"></div>
+  <div id="results"></div>
+
+  <!-- 학년별/과별 인원 통계 -->
+  <div id="summary"></div>
+
+  <script type="module" src="src/js/search.js?v=5.08"></script>
+
+</body>
+
+</html>

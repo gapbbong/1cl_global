@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>배움터지킴이</title>
+    <link rel="stylesheet" href="src/css/main.css">
+    <link rel="stylesheet" href="src/css/keeper.css">
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#1e293b">
+
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vqru6iwnq8");
+</script>
+</head>
+
+<body>
+    <header class="keeper-header">
+        <h1>🧑‍🏫 배움터지킴이</h1>
+
+        <div class="header-buttons">
+            <button id="bulk-record-btn" class="bulk-btn" onclick="location.href='bulk-record.html?from=keeper'">
+                📋 일괄 기록
+            </button>
+            <button id="logout-btn" class="logout-btn">로그아웃</button>
+        </div>
+    </header>
+
+    <main class="keeper-main">
+        <div class="status-summary">
+            <div class="summary-box out">
+                <span class="label">외출 학생</span>
+                <span class="count"><span id="out-count">0</span>명</span>
+            </div>
+            <div class="summary-box early">
+                <span class="label">조퇴 학생</span>
+                <span class="count"><span id="early-count">0</span>명</span>
+            </div>
+        </div>
+
+        <div id="list-container" class="list-container">
+            <div id="loading-view" class="loading-state">데이터를 실시간으로 불러오는 중입니다...</div>
+            <div id="empty-view" class="empty-state" style="display: none;">오늘 외출 또는 조퇴한 학생이 없습니다.</div>
+
+            <div class="record-grid" id="record-grid">
+                <!-- JS에서 카드 동적 생성 -->
+            </div>
+        </div>
+    </main>
+    <script type="module" src="src/js/keeper.js"></script>
+</body>
+
+</html>

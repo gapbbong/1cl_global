@@ -1,0 +1,25 @@
+<script>
+  const url = "https://script.google.com/macros/s/웹앱_URL/exec";
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      const goodSelect = document.getElementById("goodSelect");
+      const badSelect = document.getElementById("badSelect");
+
+      data.good.forEach(item => {
+        const option = document.createElement("option");
+        option.textContent = item;
+        goodSelect.appendChild(option);
+      });
+
+      data.bad.forEach(item => {
+        const option = document.createElement("option");
+        option.textContent = item;
+        badSelect.appendChild(option);
+      });
+    })
+    .catch(err => {
+      console.error("❌ 항목을 불러올 수 없습니다:", err);
+    });
+</script>

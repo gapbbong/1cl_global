@@ -1,0 +1,737 @@
+/* index.html 전용 스타일 */
+
+/* 제목 & 검색버튼 정렬 */
+.title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+    margin: 2px auto 2px auto;
+    /* 5px -> 2px 마진 압축 (v3.1.8) */
+    padding: 2px 20px;
+    /* 5px -> 2px 패딩 압축 (v3.1.8) */
+    box-sizing: border-box;
+    z-index: 100;
+    position: relative;
+}
+
+.title-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.calendar-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 0.2s;
+    position: relative;
+    /* 클릭 유도 배지를 위한 위치 기준 */
+}
+
+.calendar-link:hover {
+    transform: scale(1.1);
+}
+
+/* 캘린더 클릭 유도 펄스 테두리 (v3.4.2) */
+.calendar-link::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    z-index: -1;
+    /* 아이콘 뒤 또는 테두리에 겹치게 */
+    pointer-events: none;
+    animation: hint-border-pulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+
+.calendar-link.hide-hint::after {
+    display: none;
+}
+
+@keyframes hint-border-pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+
+.dynamic-calendar-icon {
+    width: 45px;
+    height: 52px;
+    /* 요일 잘림 방지를 위해 높이 상향 (48px -> 52px) */
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    border: 1px solid #ddd;
+}
+
+.cal-date {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #3c4043;
+    background: #ffffff;
+    padding-top: 2px;
+    /* 5px -> 2px (위로 올림) */
+    line-height: 1.1;
+}
+
+.cal-day {
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 1px 0 3px;
+    /* 2px 0 3px -> 1px 0 3px (위로 올림) */
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.school-name {
+    font-size: 2.3em; /* Slightly reduced for space */
+    font-weight: 800;
+    color: #4A90E2;
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+    -webkit-text-stroke: 0.2px rgba(255, 255, 255, 0.5);
+    text-shadow:
+        0 1px 0 #fff,
+        0 1.5px 2px rgba(0, 0, 0, 0.15);
+    paint-order: stroke fill;
+    z-index: 10;
+}
+
+.nav-actions {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+}
+
+/* 상단 버전 정보 */
+.version-tag {
+    position: absolute;
+    top: 8px;
+    right: 20px;
+    font-size: 0.65rem;
+    /* 0.8rem -> 0.65rem 주어짐 */
+    color: #888;
+    /* 조금 더 연하게 */
+    font-weight: 700;
+    z-index: 101;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+
+/* 햄버거 메뉴 */
+.hamburger-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.hamburger-btn {
+    background: none;
+    border: none;
+    font-size: 1.6em;
+    cursor: pointer;
+    padding: 0px 8px;
+    /* 위아래 패딩 제거 */
+    margin-top: -5px;
+    /* 위로 더 올림 */
+    color: #333;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hamburger-btn:active {
+    transform: scale(0.9);
+}
+
+.hamburger-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 8px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+    width: fit-content;
+    min-width: 140px;
+    overflow: hidden;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hamburger-dropdown button {
+    width: 100%;
+    padding: 12px 18px;
+    text-align: left;
+    background: none;
+    border: none;
+    font-size: 0.95rem;
+    color: #333;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 1px solid #f1f3f4;
+    transition: background 0.2s;
+}
+
+.hamburger-dropdown button:hover {
+    background-color: #f1f5f9;
+}
+
+.menu-divider {
+    height: 1px;
+    background-color: #e2e8f0;
+    margin: 4px 0;
+}
+
+.hamburger-dropdown button:last-child {
+    border-bottom: none;
+}
+
+.menu-version {
+    padding: 10px 18px;
+    font-size: 0.75rem;
+    color: #999;
+    background: #f8fafc;
+    text-align: center;
+    border-top: 1px solid #f1f3f4;
+    font-weight: 600;
+}
+
+/* 상단 네비게이션 액션 버튼 셋 */
+.nav-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border: 2px solid #f1f3f4;
+    /* 테두리 조금 더 두껍게 */
+    color: #333;
+    cursor: pointer;
+    padding: 10px 18px;
+    /* 패딩 대폭 확대 */
+    border-radius: 14px;
+    min-width: 100px;
+    /* 너비 확대 */
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.06);
+    text-decoration: none;
+}
+
+.nav-action-btn:active {
+    transform: translateY(0);
+}
+
+.nav-icon {
+    font-size: 1.8rem;
+    /* 아이콘 크기 확대 */
+    margin-bottom: 4px;
+}
+
+.nav-text {
+    font-size: 1.1rem;
+    /* 텍스트 크기 확대 */
+    font-weight: 800;
+    color: #333;
+    white-space: nowrap;
+}
+
+html,
+body {
+    overflow: hidden;
+    /* 한 화면에 다 나오게 스크롤 제거 */
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    height: 100dvh;
+    /* dvh 적용: 주소창/하단바 자동 계산 */
+    /* 모바일 하단바 대응 */
+    padding: 0;
+    margin: 0;
+}
+
+/* 전체 그리드 영역 */
+.class-grid {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    width: 100%;
+    flex: 1;
+    /* 남은 공간 모두 차지 */
+    min-height: 0;
+    /* flex 자식의 최소 높이 초기화 */
+    padding: 2px 25px 25px 25px;
+    /* 좌우, 하단 여백 대폭 확대 */
+    gap: clamp(20px, 5vw, 100px);
+    /* 가로 간격 대폭 확대 (v3.5.1) */
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* 세로 스크롤 허용 */
+}
+
+.class-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.class-grid::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.class-grid::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+/* 학년별 세로열 */
+.grade-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: center;
+    flex: 1;
+    height: 100%; /* max-content 제거하고 100%로 변경하여 상하 꽉 채움 */
+    padding: 0;
+    gap: clamp(8px, 2.25dvh, 25px);
+    /* 세로 간격 최종 최적화 1.5배 확대 (v3.3.1) */
+}
+
+/* 각 반(카드) */
+.class-box {
+    width: 100%;
+    flex: 1;
+    /* 화면을 꽉 채우도록 다시 확장하되, 내용이 많으면 스크롤되도록 최소 높이 보장 */
+    min-height: clamp(65px, 8dvh, 100px);
+    display: flex;
+}
+
+/* 카드 섹션 */
+.class-section {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    padding: 1px 10px;
+    /* 수직 패딩 최소화 */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 0;
+    max-height: none;
+    /* 높이 제한을 완전히 풀어 화면에 맞게 자동 확장 (v3.2.8) */
+}
+
+.class-section:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+/* 반 제목 */
+.class-section .class-title {
+    font-size: clamp(0.85rem, 2.5vh, 1.2rem);
+    /* 0.9rem -> 0.85rem, 2.8vh -> 2.5vh */
+    font-weight: 800;
+    color: #333;
+    margin: 0;
+    margin-bottom: clamp(4px, 0.8dvh, 10px);
+    /* 반 이름과 교사 이름 사이 간격 추가 축소 (v3.3.3) */
+    white-space: nowrap;
+    line-height: 1.0;
+    /* 1.1 -> 1.0 */
+}
+
+.count-badge {
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+/* 기록 건수 링크 스타일 */
+.title-link,
+.count-badge-link {
+    text-decoration: none !important;
+    transition: opacity 0.2s;
+}
+
+.title-link:hover,
+.count-badge-link:hover {
+    opacity: 0.7;
+}
+
+.title-link {
+    color: #4A90E2;
+}
+
+/* 어두운 배경에서의 기록 건수 색상 */
+.class-section[style*="color: rgb(255, 255, 255)"] .count-badge {
+    color: #ffeb3b;
+}
+
+.class-section[style*="color: rgb(255, 255, 255)"] .count-badge-link {
+    color: #ffeb3b;
+}
+
+/* 로딩 애니메이션 추가 */
+.loading-dots::after {
+    content: "";
+    animation: loadingDots 1.5s infinite steps(1, end);
+}
+
+@keyframes loadingDots {
+    0% {
+        content: "";
+    }
+
+    25% {
+        content: ".";
+    }
+
+    50% {
+        content: "..";
+    }
+
+    75% {
+        content: "...";
+    }
+
+    100% {
+        content: "";
+    }
+}
+
+/* 로딩 및 에러 상태 */
+.error-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    font-size: 1.2em;
+    color: #666;
+}
+
+/* 반 버튼 */
+.class-button {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-decoration: none;
+    color: inherit;
+    white-space: nowrap;
+}
+
+/* 교사 정보 */
+.teacher-line {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2px, 0.6dvh, 8px);
+    /* 담임-부담임 사이 간격 추가 축소 (v3.3.3) */
+}
+
+.teacher-line div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    /* 10px -> 8px */
+    margin: 0;
+    /* 강제 제거 */
+    font-size: clamp(0.75rem, 1.8vh, 1.05rem);
+    /* [v5.07] 교사 성함 크기 상향 (+2) */
+    font-weight: 700;
+    flex-wrap: nowrap;
+    line-height: 1.1;
+    /* 1.0 -> 1.1 */
+}
+
+/* 반응형 여백 조정 */
+@media (max-width: 900px) {
+    .class-grid {
+        gap: 12px;
+    }
+
+    .grade-column {
+        width: clamp(160px, 28vw, 200px);
+    }
+}
+
+@media (max-width: 600px) {
+    .title-bar {
+        padding: 5px 10px;
+    }
+
+    .school-name {
+        font-size: 1.9em;
+        /* 1.6em -> 1.9em 상향 (v3.9.1) */
+        position: static;
+        transform: none;
+        flex: 1;
+        text-align: center;
+    }
+
+    .title-left,
+    .nav-actions {
+        flex: none;
+    }
+
+    .nav-actions {
+        gap: 6px;
+        z-index: 20;
+    }
+
+    .nav-action-btn {
+        padding: 5px 8px;
+        min-width: 50px;
+        border-radius: 10px;
+    }
+
+    .nav-icon {
+        font-size: 1.2rem;
+        margin-bottom: 2px;
+    }
+
+    .nav-text {
+        font-size: 0.8rem;
+    }
+
+    .class-grid {
+        gap: 12px;
+        padding: clamp(2px, 0.5dvh, 5px) 8px calc(15px + env(safe-area-inset-bottom)) 8px;
+        /* 하단 여백 대폭 확보하여 브라우저 주소줄에 가려지는 현상 방지 */
+    }
+
+    .class-box {
+        flex: 1;
+        /* 모바일에서도 화면 꽉 채우기 (v3.2.8) */
+        max-height: none;
+    }
+
+    .grade-column {
+        width: clamp(100px, 30vw, 180px);
+        /* 최소 너비를 낮춰 여백 공간 확보 (v3.5.1) */
+        min-height: 0;
+    }
+
+    .class-section {
+        padding: clamp(1px, 0.3dvh, 4px) 5px;
+        max-height: none;
+        /* 모바일에서는 높이 제한 해제하여 자동 높이 맞춤 (v3.1.9) */
+    }
+}
+
+@media (max-width: 400px) {
+    .class-grid {
+        padding: 2px 5px calc(15px + env(safe-area-inset-bottom)) 5px;
+        gap: 10px;
+    }
+
+    .grade-column {
+        width: clamp(100px, 33vw, 150px);
+        /* gap은 전역 설정을 따름 (v3.2.6) */
+    }
+
+    .class-section {
+        max-height: none;
+        /* 초소형에서도 세로 스크롤을 위해 높이 제한 해제 */
+    }
+
+    .class-section .class-title {
+        font-size: clamp(0.7rem, 2.1vh, 1.05rem);
+    }
+
+    .teacher-line div {
+        /* [v5.06] 텍스트 크기 더 크게 상향 (+2) */
+        font-size: clamp(0.75rem, 2.0vh, 1.05rem);
+    }
+}
+
+/* --- 긴급 스타일 통합: 모달 및 툴팁 --- */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.contact-modal-content {
+    background: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 320px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.floating-tooltip {
+    display: none;
+    width: 95%;
+    max-width: 550px;
+    margin: 0 auto 15px auto !important;
+    background: #000000 !important;
+    color: #ffffff !important;
+    padding: 14px 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+    z-index: 9999 !important;
+    box-sizing: border-box;
+    animation: slideInDown 0.4s ease-out;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.floating-tooltip .highlight {
+    color: #ffcc00 !important;
+    font-weight: 800;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.class-box {
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    user-select: none;
+}
+
+.class-box.pressing {
+    transform: scale(0.96);
+    opacity: 0.9;
+}
+
+/* --- 스플래시 화면 스타일 (v4.15) --- */
+#splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+    overflow: hidden;
+}
+
+.splash-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    animation: splash-zoom 10s ease-out forwards;
+}
+
+#splash-img {
+    max-width: 70%;
+    max-height: 50%;
+    object-fit: contain;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+.splash-loader {
+    position: absolute;
+    bottom: 10%;
+    width: 32px;
+    height: 32px;
+    border: 4px solid #f1f5f9;
+    border-top: 4px solid #3399ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes splash-zoom {
+    from {
+        transform: scale(1.0);
+    }
+
+    to {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+#splash-screen.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}

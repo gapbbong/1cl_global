@@ -1,0 +1,84 @@
+/* 공통 스타일 */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
+* {
+    box-sizing: border-box;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
+
+html,
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    padding-bottom: calc(120px + env(safe-area-inset-bottom));
+}
+
+/* 링크 스타일 */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:hover,
+a:active,
+a:focus {
+    text-decoration: none;
+}
+
+/* 스크롤바 숨기기 */
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* --- 인앱 알림 토스트 (Native 알림 보충용) --- */
+.notification-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: rgba(0, 0, 0, 0.82);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    z-index: 10001;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    transition: transform 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 90%;
+    max-width: 380px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.notification-toast.show {
+    transform: translateX(-50%) translateY(20px);
+}
+
+.notification-toast-icon {
+    font-size: 1.1rem;
+    background: rgba(255, 255, 255, 0.15);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.notification-toast-msg {
+    flex: 1;
+    line-height: 1.4;
+}

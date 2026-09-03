@@ -1,0 +1,240 @@
+.settings-modal-content {
+    max-width: 420px !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    padding: 20px 20px !important;
+    text-align: left !important;
+    background: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(25px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 28px !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.18) !important;
+    color: #1d1d1f !important;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
+}
+
+.settings-section {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.settings-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.settings-title {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #1d1d1f;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.02em;
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.settings-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #424245;
+}
+
+.initial-page-grid, .notif-page-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.notif-page-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.initial-page-option, .notif-option {
+    cursor: pointer;
+}
+
+.initial-page-option input, .notif-option input {
+    display: none;
+}
+
+.option-pill {
+    background: rgba(0, 0, 0, 0.04);
+    border: 1.5px solid transparent;
+    border-radius: 10px;
+    padding: 8px 4px;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #86868b;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.initial-page-option input:checked + .option-pill,
+.notif-option input:checked + .option-pill {
+    background: #0071e3;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+}
+
+.initial-page-option:hover .option-pill {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.initial-page-option input:checked:hover .option-pill {
+    background: #0077ed;
+}
+
+.settings-item-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.menu-item-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    font-weight: 600;
+}
+
+.menu-item-toggle:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.menu-item-toggle input {
+    width: 22px;
+    height: 22px;
+    accent-color: #0071e3;
+    border-radius: 6px;
+}
+
+.custom-menu-list {
+    margin-top: 14px;
+}
+
+#contact-download-btn:hover {
+    background: #fff;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.custom-menu-card {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.custom-menu-name {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #1d1d1f;
+}
+
+.custom-menu-count {
+    font-size: 0.85rem;
+    color: #86868b;
+}
+
+.modal-close-icon {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.08);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: #1d1d1f;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-close-icon:hover {
+    background: rgba(0, 0, 0, 0.15);
+    transform: rotate(90deg);
+}
+
+.modal-close-icon:active {
+    transform: scale(0.9);
+}
+
+/* --- iPhone 스타일 버튼 --- */
+.modal-actions {
+    margin-top: 24px !important;
+}
+
+.btn-primary {
+    background: linear-gradient(180deg, #0071e3 0%, #0062c3 100%) !important;
+    color: #ffffff !important;
+    padding: 12px !important;
+    width: 100% !important;
+    border-radius: 18px !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 8px 16px rgba(0, 113, 227, 0.2) !important;
+}
+
+.btn-primary:active {
+    transform: scale(0.97);
+    filter: brightness(0.9);
+}
+
+.cancel-btn:hover {
+    background: rgba(0, 0, 0, 0.1) !important;
+}
+
+.btn-danger {
+    background: #ff3b30 !important;
+    color: #ffffff !important;
+    padding: 8px 16px !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+.menu-section-title {
+    padding: 12px 24px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #86868b;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}

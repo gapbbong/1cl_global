@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>user log - 관리자</title>
+    <link rel="stylesheet" href="src/css/main.css?v=4.73">
+    <style>
+        body {
+            background: #f8fafc;
+            padding: 20px;
+            font-family: 'Pretendard', sans-serif;
+            color: #1e293b;
+        }
+
+        .admin-header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            min-height: 50px;
+        }
+
+        .admin-header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+/* version-badge removed in v4.57 */
+
+        .back-btn {
+            position: absolute;
+            left: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #f1f5f9;
+            transform: translateY(-1px);
+        }
+
+        .admin-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .slot-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .slot-box {
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #f1f5f9;
+        }
+
+        .slot-val {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #2563eb;
+            display: block;
+        }
+
+        .slot-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .count-active {
+            font-size: 0.9rem;
+            color: #2563eb;
+            font-weight: 600;
+            margin-left: 8px;
+            background: #eff6ff;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px 4px;
+            background: #f8fafc;
+            color: #1e293b;
+            font-size: 0.85rem;
+            font-weight: 800;
+            border-bottom: 2px solid #f1f5f9;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 8px 4px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #000000;
+        }
+
+        .badge {
+            background: #eff6ff;
+            color: #1d4ed8;
+            padding: 3px 6px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            display: inline-block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            letter-spacing: -0.02em;
+        }
+
+        .stay-info {
+            font-size: 0.85rem;
+            color: #000000;
+            font-weight: 600;
+        }
+
+        .teacher-info {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            overflow: hidden;
+        }
+
+        .teacher-name {
+            font-weight: 800;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+            color: #000000;
+        }
+
+        .teacher-class {
+            font-size: 0.8rem;
+            color: #000000;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .timeline-item {
+            border-left: 3px solid #e2e8f0;
+            padding-left: 15px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 2px;
+            width: 12px;
+            height: 12px;
+            background: #3b82f6;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .load-more-btn {
+            width: 100%;
+            padding: 12px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            color: #64748b;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .load-more-btn:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        /* 탭 스타일 */
+        .tab-container {
+            display: flex;
+            background: #e2e8f0;
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            gap: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #1e293b;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="admin-header">
+        <button class="back-btn" onclick="location.href='index.html'" title="홈으로">🏠</button>
+        <h1>user log</h1>
+    </header>
+
+    <main>
+        <!-- 통계 요약 -->
+        <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+            <div class="admin-card" style="flex: 1; margin-bottom: 0; padding: 15px; text-align: center;">
+                <span id="total-cumulative-logs" style="font-size: 1.3rem; font-weight: 900; color: #64748b;">-</span>
+                <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">누적 전체 로그</div>
+            </div>
+            <div class="admin-card" style="flex: 1; margin-bottom: 0; padding: 15px; text-align: center;">
+                <span id="recent-analysis-period" style="font-size: 1.3rem; font-weight: 900; color: #2563eb;">30일</span>
+                <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">분석 기간</div>
+            </div>
+        </div>
+
+        <!-- 요일별 분석 -->
+        <div class="admin-card">
+            <h2 style="font-size: 1.1rem; margin: 0 0 15px 0;">최근 30일 요일별 방문</h2>
+            <div class="slot-grid">
+                <div class="slot-box">
+                    <span id="day-mon" class="slot-val">0</span>
+                    <span class="slot-label">월요일</span>
+                </div>
+                <div class="slot-box">
+                    <span id="day-tue" class="slot-val">0</span>
+                    <span class="slot-label">화요일</span>
+                </div>
+                <div class="slot-box">
+                    <span id="day-wed" class="slot-val">0</span>
+                    <span class="slot-label">수요일</span>
+                </div>
+                <div class="slot-box">
+                    <span id="day-thu" class="slot-val">0</span>
+                    <span class="slot-label">목요일</span>
+                </div>
+                <div class="slot-box">
+                    <span id="day-fri" class="slot-val">0</span>
+                    <span class="slot-label">금요일</span>
+                </div>
+                <div class="slot-box" style="background:#fff1f2;">
+                    <span id="day-weekend" class="slot-val" style="color:#e11d48;">0</span>
+                    <span class="slot-label">토/일</span>
+                </div>
+                <div class="slot-box" style="background:#f0fdf4; border-color:#dcfce7;">
+                    <span id="day-total" class="slot-val" style="color:#16a34a;">0</span>
+                    <span class="slot-label">총 활동</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 시간대별 분석 -->
+        <div class="admin-card" style="margin-bottom: 25px;">
+            <h2 style="font-size: 1.1rem; margin: 0 0 15px 0;">시간대별 활동</h2>
+            <div class="slot-grid">
+                <div class="slot-box">
+                    <span id="slot-morning" class="slot-val">0</span>
+                    <span class="slot-label">오전(0~12)</span>
+                </div>
+                <div class="slot-box">
+                    <span id="slot-lunch" class="slot-val">0</span>
+                    <span class="slot-label">점심(12~14)</span>
+                </div>
+                <div class="slot-box">
+                    <span id="slot-afternoon" class="slot-val">0</span>
+                    <span class="slot-label">오후(14~18)</span>
+                </div>
+                <div class="slot-box">
+                    <span id="slot-evening" class="slot-val">0</span>
+                    <span class="slot-label">저녁(18~24)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 탭 메뉴 -->
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="switchTab('activity')">최근 활동 기록</button>
+            <button class="tab-btn" onclick="switchTab('summary')">선생님별 요약</button>
+        </div>
+
+        <!-- 탭 콘텐츠: 최근 타임라인 -->
+        <div id="tab-activity" class="tab-content active">
+            <div class="admin-card">
+                <div id="timeline-list">
+                    분석 중...
+                </div>
+                <button id="load-more-timeline" class="load-more-btn" style="display: none;">50개 더 보기</button>
+            </div>
+        </div>
+
+        <!-- 탭 콘텐츠: 선생님별 분석 (요약) -->
+        <div id="tab-summary" class="tab-content">
+            <div class="admin-card" style="padding: 15px 5px;">
+                <div style="margin-bottom: 12px; display: flex; align-items: center; padding-left: 5px;">
+                    <h2 style="font-size: 1rem; margin: 0;">선생님별 요약</h2>
+                    <span id="active-teachers-count" class="count-active">- 명 활동</span>
+                </div>
+                <div id="log-list">
+                    데이터 분석 중...
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { supabase } from './src/js/supabase.js';
+        import { API_CONFIG } from './src/js/config.js';
+        import CryptoJS from 'crypto-js';
+
+        function getStoredEmail() {
+            const encrypted = localStorage.getItem('teacher_auth_token');
+            if (!encrypted) return null;
+            try {
+                const bytes = CryptoJS.AES.decrypt(encrypted, API_CONFIG.SECRET_KEY);
+                const email = bytes.toString(CryptoJS.enc.Utf8);
+                return email || null;
+            } catch (e) { return null; }
+        }
+
+        // 관리자 권한 체크: 비관리자 접근 시 메인으로 리다이렉트
+        async function checkAdminAuth() {
+            const email = getStoredEmail();
+            const adminEmails = ['gapbbong@naver.com'];
+            
+            if (!email || !adminEmails.includes(email)) {
+                alert('접근 권한이 없습니다. 교사 인증을 먼저 해주세요.');
+                window.location.href = 'index.html';
+                return false;
+            }
+            return true;
+        }
+
+        // 전역으로 탭 전환 함수 노출
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            if (tabId === 'activity') {
+                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                document.getElementById('tab-activity').classList.add('active');
+            } else {
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+                document.getElementById('tab-summary').classList.add('active');
+            }
+        }
+
+        let allSessions = [];
+        let currentDisplayCount = 50;
+
+        function formatStayTime(sec) {
+            if (sec <= 0) return '-';
+            const m = Math.floor(sec / 60);
+            const s = Math.round(sec % 60);
+            if (m >= 60) {
+                const h = Math.floor(m / 60);
+                const rm = m % 60;
+                return `${h}h ${rm}m`;
+            }
+            return m > 0 ? `${m}m ${s}s` : `${s}s`;
+        }
+
+        function renderTimeline() {
+            const list = document.getElementById('timeline-list');
+            const loadMoreBtn = document.getElementById('load-more-timeline');
+            if (!list) return;
+
+            const today = new Date().toDateString();
+            const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
+
+            const visibleSessions = allSessions.slice(0, currentDisplayCount);
+            let sHtml = '';
+
+            visibleSessions.forEach(s => {
+                const isToday = s.startTime.toDateString() === today;
+                const datePart = isToday ? '' : `${s.startTime.getMonth() + 1}.${s.startTime.getDate()}(${weekDays[s.startTime.getDay()]}) `;
+                const timeStr = s.startTime.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+                let filteredPages = s.pages.filter(p => p !== '메인 홈');
+                let displayPages = "";
+
+                if (filteredPages.length > 0) {
+                    displayPages = filteredPages.join(', ');
+                } else {
+                    displayPages = s.lastPage;
+                }
+
+                const stay = s.totalStay > 0 ? ` / ${formatStayTime(s.totalStay)}` : '';
+                const classLabel = s.classInfo ? ` ${s.classInfo}` : '';
+                sHtml += `
+                <div class="timeline-item">
+                    <div style="font-weight:800; font-size:0.95rem;">${s.name}${classLabel} <span style="color:#2563eb;">${s.count > 1 ? `[${s.count}회 활동]` : ''}</span></div>
+                    <div style="font-size:0.8rem; color:#64748b; margin-top:2px;">
+                        ${datePart}${timeStr} | ${displayPages}${stay}
+                    </div>
+                </div>`;
+            });
+
+            list.innerHTML = sHtml || "기록이 없습니다.";
+
+            if (loadMoreBtn) {
+                if (allSessions.length > currentDisplayCount) {
+                    loadMoreBtn.style.display = 'block';
+                    loadMoreBtn.textContent = `${allSessions.length - currentDisplayCount > 50 ? 50 : allSessions.length - currentDisplayCount}개 더 보기 (전체 ${allSessions.length}개 중 ${currentDisplayCount}개 표시)`;
+                } else {
+                    loadMoreBtn.style.display = 'none';
+                }
+            }
+        }
+
+        async function loadStats() {
+            // 관리자 여부 먼저 확인
+            const isAdmin = await checkAdminAuth();
+            if (!isAdmin) return;
+
+            try {
+                // 1. 전체 데이터 정보 (누적 및 교사) 로드
+                const [tRes, cRes] = await Promise.all([
+                    supabase.from('teachers').select('email, name, assigned_class'),
+                    supabase.from('user_logs').select('*', { count: 'exact', head: true })
+                ]);
+                
+                const { data: teachers, error: tError } = tRes;
+                if (tError) throw tError;
+                
+                const totalCumulative = cRes.count || 0;
+                document.getElementById('total-cumulative-logs').textContent = totalCumulative.toLocaleString();
+
+                const teacherMap = {};
+                teachers.forEach(t => {
+                    if (t.name === '이갑종') return; // 이갑종 선생님 제외
+                    teacherMap[t.email] = {
+                        name: t.name,
+                        classInfo: t.assigned_class ? `(${t.assigned_class})` : ''
+                    };
+                });
+
+                // 2. 로그 로드 (최근 30일치, 최대 30,000건)
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                const thirtyDaysAgoIso = thirtyDaysAgo.toISOString();
+
+                let rawData = [];
+                // 1000개씩 최대 30번 (3만건) 시도
+                for (let i = 0; i < 30; i++) {
+                    const { data: page, error } = await supabase
+                        .from('user_logs')
+                        .select('created_at, teacher_email, page_path, action')
+                        .gte('created_at', thirtyDaysAgoIso)
+                        .order('created_at', { ascending: false })
+                        .range(i * 1000, (i + 1) * 1000 - 1);
+                        
+                    if (error) throw error;
+                    if (!page || page.length === 0) break;
+                    
+                    rawData = rawData.concat(page);
+                    if (page.length < 1000) break;
+                }
+                const data = rawData.reverse(); 
+
+                // 3. 분석 수행 - 이갑종 선생님은 활동 카운트에서도 제외
+                const activeEmails = new Set(
+                    data.map(l => l.teacher_email)
+                        .filter(email => teacherMap[email])
+                );
+                document.getElementById('active-teachers-count').textContent = `${activeEmails.size}명 활동`;
+
+                const dayCounts = { mon: 0, tue: 0, wed: 0, thu: 0, fri: 0, weekend: 0 };
+                const timeSlots = { morning: 0, lunch: 0, afternoon: 0, evening: 0 };
+                const sessions = [];
+                const teacherAnalysis = {};
+
+                // 초기화
+                teachers.forEach(t => {
+                    if (t.name === '이갑종') return; // 이갑종 선생님 제외
+                    teacherAnalysis[t.email] = {
+                        name: t.name,
+                        classInfo: t.assigned_class ? `(${t.assigned_class})` : '',
+                        lastPage: '-', total: 0, teacherTotalStay: 0
+                    };
+                });
+
+                data.forEach((log, i) => {
+                    const email = log.teacher_email;
+                    const tMapInfo = teacherMap[email] || { name: email.split('@')[0], classInfo: '' };
+
+                    let pageRaw = log.page_path.split('/').pop() || '홈';
+                    let page = pageRaw;
+                    if (page === 'index.html' || page === '') page = '메인 홈';
+                    else if (page.includes('.html')) page = page.replace('.html', '');
+
+                    const time = new Date(log.created_at);
+                    const hour = time.getHours();
+
+                    if (hour < 12) timeSlots.morning++;
+                    else if (hour < 14) timeSlots.lunch++;
+                    else if (hour < 18) timeSlots.afternoon++;
+                    else timeSlots.evening++;
+
+                    const day = time.getDay(); // 0(일) ~ 6(토)
+                    if (day === 1) dayCounts.mon++;
+                    else if (day === 2) dayCounts.tue++;
+                    else if (day === 3) dayCounts.wed++;
+                    else if (day === 4) dayCounts.thu++;
+                    else if (day === 5) dayCounts.fri++;
+                    else dayCounts.weekend++;
+
+                    const tData = teacherAnalysis[email];
+                    if (tData) {
+                        // 로직 고도화: '메인 홈'은 다른 유의미한 활동이 없을 때만 기본값으로 표시
+                        // 1. 아직 아무 기록이 없으면 현재 페이지 기록
+                        // 2. 현재 페이지가 '메인 홈'이 아니면 무조건 최신 활동으로 업데이트
+                        // 3. 현재 페이지가 '메인 홈'인데 이미 '메인 홈'이 아닌 유의미한 페이지가 기록되어 있다면 업데이트 무시
+                        if (tData.lastPage === '-' || page !== '메인 홈') {
+                            tData.lastPage = page;
+                        }
+
+                        tData.total++;
+
+                        const prevSession = sessions[sessions.length - 1];
+                        let currentStay = 0;
+                        const next = data.find((l, idx) => idx > i && l.teacher_email === email);
+                        if (next) {
+                            const diff = (new Date(next.created_at) - time) / 1000;
+                            if (diff < 1800) {
+                                currentStay = diff;
+                                tData.teacherTotalStay += diff;
+                            }
+                        }
+
+                        if (prevSession && prevSession.email === email && (time - prevSession.endTime) < 300000) {
+                            prevSession.count++;
+                            prevSession.endTime = time;
+                            prevSession.totalStay += currentStay;
+                            if (!prevSession.pages.includes(page)) prevSession.pages.push(page);
+                            prevSession.lastPage = page; // 실시간 최종 페이지 추적
+                        } else {
+                            sessions.push({
+                                email, name: tMapInfo.name, classInfo: tMapInfo.classInfo, startTime: time, endTime: time,
+                                pages: [page], count: 1, totalStay: currentStay,
+                                lastPage: page
+                            });
+                        }
+                    }
+                });
+
+                document.getElementById('slot-morning').textContent = timeSlots.morning;
+                document.getElementById('slot-lunch').textContent = timeSlots.lunch;
+                document.getElementById('slot-afternoon').textContent = timeSlots.afternoon;
+                document.getElementById('slot-evening').textContent = timeSlots.evening;
+
+                document.getElementById('day-mon').textContent = dayCounts.mon;
+                document.getElementById('day-tue').textContent = dayCounts.tue;
+                document.getElementById('day-wed').textContent = dayCounts.wed;
+                document.getElementById('day-thu').textContent = dayCounts.thu;
+                document.getElementById('day-fri').textContent = dayCounts.fri;
+                document.getElementById('day-weekend').textContent = dayCounts.weekend;
+                document.getElementById('day-total').textContent = (dayCounts.mon + dayCounts.tue + dayCounts.wed + dayCounts.thu + dayCounts.fri + dayCounts.weekend).toLocaleString();
+
+                function formatStayTime(sec) {
+                    if (sec <= 0) return '-';
+                    const m = Math.floor(sec / 60);
+                    const s = Math.round(sec % 60);
+                    if (m >= 60) {
+                        const h = Math.floor(m / 60);
+                        const rm = m % 60;
+                        return `${h}h ${rm}m`;
+                    }
+                    return m > 0 ? `${m}m ${s}s` : `${s}s`;
+                }
+
+                let tHtml = '<table><colgroup><col style="width:105px;"><col style="width:115px;"><col style="width:30px;"><col style="width:55px;"></colgroup><tr><th>선생님</th><th>주요 활동</th><th style="text-align:center;">활동</th><th style="text-align:right;">체류시간</th></tr>';
+                Object.values(teacherAnalysis).sort((a, b) => b.total - a.total).forEach(t => {
+                    const stay = formatStayTime(t.teacherTotalStay);
+                    tHtml += `<tr>
+                        <td>
+                            <div class="teacher-info">
+                                <span class="teacher-name">${t.name}</span>
+                                <span class="teacher-class">${t.classInfo}</span>
+                            </div>
+                        </td>
+                        <td><span class="badge" style="${t.total === 0 ? 'background:#f1f5f9; color:#94a3b8;' : ''}">${t.lastPage}</span></td>
+                        <td style="text-align:center; font-weight:800; color:#000000;">${t.total}</td>
+                        <td style="text-align:right;"><span class="stay-info">${stay}</span></td>
+                    </tr>`;
+                });
+                tHtml += '</table>';
+                document.getElementById('log-list').innerHTML = tHtml;
+
+                allSessions = sessions.reverse();
+                renderTimeline();
+                
+                // 분석된 데이터 양 표시
+                console.log(`Analysed ${rawData.length} logs from last 30 days.`);
+                document.getElementById('recent-analysis-period').textContent = `${rawData.length}건`;
+                document.querySelector('#recent-analysis-period + div').textContent = '최근 30일 분석';
+
+                document.getElementById('load-more-timeline').addEventListener('click', () => {
+                    currentDisplayCount += 50;
+                    renderTimeline();
+                });
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('log-list').innerHTML = "오류: " + err.message;
+            }
+        }
+
+        loadStats();
+    </script>
+</body>
+
+</html>

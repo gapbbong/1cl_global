@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>학생 기초조사</title>
+  <link rel="icon" href="favicon.ico" />
+  <style>
+    :root{--p:#365cf5}
+    *{box-sizing:border-box}
+    body{margin:0;background:#f5f7fb;color:#172033;font:15px/1.6 -apple-system,"Malgun Gothic",Arial,sans-serif}
+    .wrap{max-width:560px;margin:0 auto;padding:24px 16px 60px}
+    .head{text-align:center;margin-bottom:20px}
+    .head h1{margin:6px 0 4px;font-size:20px}
+    .head p{color:#718096;margin:0;font-size:13px}
+    .card{background:#fff;border:1px solid #e5e9f0;border-radius:14px;padding:18px;margin-bottom:14px}
+    .grp{font-weight:800;color:var(--p);margin:22px 4px 4px;font-size:13px}
+    .field{margin:14px 0}
+    .field label{display:block;font-weight:700;margin-bottom:6px;font-size:14px}
+    .field .req{color:#d13b4f}
+    input,select,textarea{width:100%;border:1px solid #dfe4ec;border-radius:8px;padding:11px;font-size:15px;font-family:inherit}
+    textarea{min-height:78px;resize:vertical}
+    .langbar{display:flex;gap:6px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+    .langbar button{border:1px solid #dfe4ec;background:#fff;border-radius:20px;padding:5px 12px;cursor:pointer;font-size:13px}
+    .langbar button.on{background:var(--p);color:#fff;border-color:var(--p)}
+    .submit{width:100%;border:0;border-radius:10px;background:var(--p);color:#fff;font-size:16px;font-weight:700;padding:15px;cursor:pointer;margin-top:8px}
+    .submit:disabled{opacity:.6}
+    .msg{text-align:center;padding:60px 16px;color:#718096}
+    .ok{text-align:center;padding:70px 16px}
+    .ok .big{font-size:52px}
+    .photo-prev{width:120px;height:150px;object-fit:cover;border-radius:10px;margin-top:8px;background:#eef1f5}
+    .err{color:#d13b4f;font-size:13px;margin-top:4px}
+  </style>
+</head>
+<body>
+  <div class="wrap" id="app"><div class="msg">불러오는 중…</div></div>
+  <script type="module" src="src/js/survey-form.js"></script>
+</body>
+</html>

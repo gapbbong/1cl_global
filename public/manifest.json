@@ -1,0 +1,20 @@
+{
+  "name": "원클",
+  "short_name": "원클",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3399ff",
+  "icons": [
+    {
+      "src": "icons/oneclass_192.png?v=4.15.3",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/oneclass_512.png?v=4.15.3",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

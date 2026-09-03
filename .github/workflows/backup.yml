@@ -1,0 +1,34 @@
+name: Supabase DB 자동 백업
+
+on:
+  schedule:
+    - cron: '0 15 * * *'   # 매일 00:00 KST (UTC 15:00)
+  workflow_dispatch: {}      # 수동 실행
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'   # @supabase/supabase-js는 Node 22+ 필요 (native WebSocket)
+
+      - run: npm ci || npm install
+
+      - name: DB 덤프
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          # 기존 secret 'SUPABASE_SERVICE_KEY' 값을 새 sb_secret_... 키로 갱신하면 됨
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          BACKUP_DIR: ${{ github.workspace }}/_ci_backup
+        run: node backup_db.js
+
+      - name: 백업을 아티팩트로 업로드 (90일 보관)
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ github.run_id }}
+          path: _ci_backup/**
+          retention-days: 90
+          if-no-files-found: error

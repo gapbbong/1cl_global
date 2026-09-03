@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>랜덤 학생 사진</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 40px 10px;
+      background-color: #f9f9f9;
+    }
+
+    h2 {
+      font-size: clamp(24px, 5vw, 36px);
+      margin-bottom: 30px;
+    }
+
+    #photo-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    img {
+      max-width: 90%;
+      height: auto;
+      border: 5px solid #ccc;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .name {
+      margin-top: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .reload-btn {
+      margin-top: 30px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #3399ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .reload-btn:hover {
+      background-color: #2277cc;
+    }
+  </style>
+
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vqru6iwnq8");
+</script>
+</head>
+<body>
+  <h2>📸 랜덤 학생 사진</h2>
+  <div id="photo-container">
+    <p>불러오는 중...</p>
+  </div>
+  <button class="reload-btn" onclick="loadPhoto()">다른 학생 보기</button>
+
+  <script>
+    function loadPhoto() {
+      const container = document.getElementById('photo-container');
+      container.innerHTML = '<p>불러오는 중...</p>';
+
+      fetch('get-one-photo.php')
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) {
+            container.innerHTML = `<p>${data.error}</p>`;
+          } else {
+            container.innerHTML = `
+              <img src="${data.photo_path}" alt="학생 사진">
+              <div class="name">${data.name}</div>
+            `;
+          }
+        })
+        .catch(err => {
+          container.innerHTML = `<p>에러 발생: ${err.message}</p>`;
+        });
+    }
+
+    // 페이지 로드 시 자동 실행
+    window.addEventListener('DOMContentLoaded', loadPhoto);
+  </script>
+</body>
+</html>

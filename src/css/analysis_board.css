@@ -1,0 +1,80 @@
+/* 전체 현황판 스타일 */
+.overall-status-board {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.status-grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.grade-column {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid #f1f5f9;
+}
+
+.grade-title {
+    text-align: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: #334155;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.class-slots {
+    display: grid;
+    grid-template-rows: repeat(6, 1fr);
+    gap: 8px;
+}
+
+.class-slot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    transition: all 0.3s;
+}
+
+/* 진행 상황에 따른 상태 클래스 */
+.class-slot.pending {
+    /* 기초조사 없음, 대상 아님 등 대기/회색 */
+    color: #94a3b8;
+    background: #f1f5f9;
+}
+
+.class-slot.progress {
+    /* 진행 중 (진행바 오버레이 등 활용 가능하지만 기본 파랑) */
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+    background: #eff6ff;
+    font-weight: 600;
+}
+
+.class-slot.complete {
+    /* 모두 완료 */
+    color: #047857;
+    border-color: #a7f3d0;
+    background: #ecfdf5;
+    font-weight: 600;
+}
+
+.class-slot .class-name {
+    font-weight: 700;
+}
+
+.class-slot .class-count {
+    font-variant-numeric: tabular-nums;
+}

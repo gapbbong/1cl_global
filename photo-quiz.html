@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My name is</title>
+    <style>
+        /* CSS 스타일 */
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            position: relative; /* #correct-answer-display를 위한 기준점 */
+        }
+
+        h1 {
+            font-size: clamp(28px, 6vw, 42px);
+            margin-bottom: 20px;
+        }
+
+        select {
+            padding: 8px;
+            font-size: 16px;
+            margin-left: 12px;
+        }
+
+        #photo {
+            max-width: 80%;
+            height: auto;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: block; /* 중앙 정렬을 위해 */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 정답 이름/표시를 위한 스타일 */
+        #correct-answer-display {
+            position: absolute; /* 절대 위치 지정 */
+            top: 50%; /* 사진의 중앙에 위치시키기 위해 */
+            left: 50%; /* 중앙 정렬 */
+            transform: translate(-50%, -50%); /* 정확히 중앙으로 이동 */
+            font-size: 3rem; /* 이름이 잘 보이도록 크기 키움 */
+            color: white; /* 틀렸을 때 이름 색상 */
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 가독성을 위한 그림자 */
+            z-index: 10; /* 다른 요소 위에 표시되도록 */
+            display: none; /* 기본적으로는 숨겨둡니다 */
+            white-space: nowrap; /* 이름이 줄바꿈되지 않도록 */
+        }
+		
+        /* #correct-icon-display 관련 CSS는 제거 */
+
+        .choices {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .choice-btn {
+            flex: 1 1 45%; /* 반응형으로 2개씩 배치 */
+            padding: 12px;
+            font-size: 24px;
+    font-weight: bold;     /* 진하게 */
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background-color: #f9f9f9;
+            box-sizing: border-box;
+            transition: background-color 0.2s; /* 부드러운 전환 효과 */
+        }
+		.bottom-controls button {
+    flex: 1 1 30%;
+    padding: 16px;
+    font-size: 24px; /* 글자 크기 키움 */
+    font-weight: bold; /* 글자 굵게 */
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s; /* hover 효과 추가 */
+}
+
+/* 건너뛰기 버튼 스타일 */
+.bottom-controls button:first-child { /* 첫 번째 버튼 (건너뛰기) */
+    background-color: #8BC08E; /* 회색 톤으로 변경 */
+    font-size: 24px; /* 글자 크기 키움 */
+    font-weight: bold; /* 글자 굵게 */
+    color: white; /* 흰색 글씨 */
+}
+
+.bottom-controls button:first-child:hover {
+    background-color: #5a6268; /* hover 시 약간 더 어둡게 */
+    font-size: 24px; /* 글자 크기 키움 */
+    font-weight: bold; /* 글자 굵게 */
+    transform: translateY(-1px); /* 살짝 위로 뜨는 효과 */
+}
+
+/* 그만하기 버튼 스타일 */
+.bottom-controls button:last-child { /* 마지막 버튼 (그만하기) */
+    background-color: #dc3545; /* 빨간색 톤으로 변경 */
+    font-size: 24px; /* 글자 크기 키움 */
+    font-weight: bold; /* 글자 굵게 */
+    color: white; /* 흰색 글씨 */
+}
+
+.bottom-controls button:last-child:hover {
+    background-color: #c82333; /* hover 시 약간 더 어둡게 */
+    font-size: 24px; /* 글자 크기 키움 */
+    font-weight: bold; /* 글자 굵게 */
+    transform: translateY(-1px); /* 살짝 위로 뜨는 효과 */
+}
+
+        .choice-btn:hover:not(:disabled) {
+            background-color: #e0e0e0;
+        }
+
+        .choice-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .bottom-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .bottom-controls button {
+            flex: 1 1 30%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: none;
+            background-color: #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .bottom-controls button:hover {
+            background-color: #ddd;
+        }
+
+        .status {
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #retry-btn {
+            display: none;
+            padding: 12px 20px;
+            font-size: 18px;
+            background-color: #3399ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #retry-btn:hover {
+            background-color: #e63946;
+        }
+    </style>
+
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vqru6iwnq8");
+</script>
+</head>
+<body>
+
+    <h1>
+        My name is
+        <select id="range" onchange="startQuizFromRange()">
+            <option>전교생</option>
+            <option>1학년 전체</option>
+            <option>2학년 전체</option>
+            <option>3학년 전체</option>
+            <option>1학년 전기과</option>
+            <option>1학년 전자과</option>
+            <option>2학년 전기과</option>
+            <option>2학년 전자과</option>
+            <option>3학년 전기과</option>
+            <option>3학년 전자과</option>
+            <option>1학년 1반</option><option>1학년 2반</option><option>1학년 3반</option>
+            <option>1학년 4반</option><option>1학년 5반</option><option>1학년 6반</option>
+            <option>2학년 1반</option><option>2학년 2반</option><option>2학년 3반</option>
+            <option>2학년 4반</option><option>2학년 5반</option><option>2학년 6반</option>
+            <option>3학년 1반</option><option>3학년 2반</option><option>3학년 3반</option>
+            <option>3학년 4반</option><option>3학년 5반</option><option>3학년 6반</option>
+        </select>
+    </h1>
+    
+    <img id="photo" src="" alt="학생 사진" onerror="this.src='default.png'" />
+    <div id="correct-answer-display"></div> <div class="choices" id="choices"></div>
+
+    <div class="bottom-controls">
+        <button onclick="skip()">건너뛰기</button>
+        <button onclick="stopQuiz()">그만하기</button>
+    </div>
+
+    <div class="status" id="status">진행률: 0 / 0, 정답률: 0%</div>
+
+    <button id="retry-btn" onclick="retryWrong()">
+        틀린 문제 다시 풀기
+    </button>
+
+    <script>
+    let students = [];
+    let current = 0;
+    let correct = 0;
+    let wrongList = [];
+    let displayTimeout; // 정답 이름/체크 표시를 위한 단일 setTimeout ID 변수
+
+    document.addEventListener("DOMContentLoaded", () => {
+        startQuizFromRange(); // 페이지 로드 시 '전교생'으로 시작
+    });
+
+    function startQuizFromRange() {
+        const selected = document.getElementById("range").value;
+        fetch("get-quiz-students.php?range=" + encodeURIComponent(selected))
+            .then(res => res.json())
+            .then(data => {
+                students = data;
+                current = 0;
+                correct = 0;
+                wrongList = [];
+                document.getElementById("retry-btn").style.display = "none";
+                // 초기화 시 표시 요소 숨기기
+                document.getElementById("correct-answer-display").style.display = "none";
+                loadNext();
+            });
+    }
+
+    function loadNext() {
+        if (displayTimeout) clearTimeout(displayTimeout); // 기존 타이머가 있다면 취소
+        
+        // 표시 요소 초기화 및 숨기기
+        const displayElement = document.getElementById("correct-answer-display");
+        displayElement.style.display = "none";
+        displayElement.style.color = "white"; // 기본 색상으로 복원
+
+        if (current >= students.length) {
+            document.getElementById("status").textContent =
+                `퀴즈 종료! 총 ${students.length}문제 중 ${correct}개 정답 (정답률 ${(correct / students.length * 100).toFixed(1)}%)`;
+            document.getElementById("retry-btn").style.display = wrongList.length ? "inline-block" : "none";
+            return;
+        }
+
+        const student = students[current];
+        document.getElementById("photo").src = student.photo_path;
+
+        const allNames = [...student.choices];
+        const choiceHtml = allNames.map(name => `
+            <button class="choice-btn" onclick="checkAnswer('${name}', '${student.name}')">${name}</button>
+        `).join("");
+
+        document.getElementById("choices").innerHTML = choiceHtml;
+        enableChoiceButtons(true);
+        updateStatus();
+    }
+
+    function checkAnswer(selected, correctName) {
+        enableChoiceButtons(false); // 버튼 비활성화
+
+        const displayElement = document.getElementById("correct-answer-display");
+
+        if (selected === correctName) {
+            correct++;
+            displayElement.textContent = "✔"; // 체크 표시로 변경
+            displayElement.style.color = "lime"; // 체크 표시 색상 (초록색)
+            displayElement.style.fontSize = "4rem"; // 체크 표시가 더 잘 보이도록 크기 키움
+            displayElement.style.display = "block"; // 표시
+
+            // 0.8초 후에 숨기고 다음 문제 로드
+            displayTimeout = setTimeout(() => {
+                displayElement.style.display = "none"; // 숨김
+                current++;
+                loadNext();
+            }, 350);
+        } else {
+            wrongList.push(students[current]);
+			
+            displayElement.textContent = correctName; // 정답 이름 표시
+            displayElement.style.color = "white"; // 틀렸을 때 이름 색상 (빨간색)
+            displayElement.style.fontSize = "3rem"; // 이름 크기 (원래대로)
+            displayElement.style.display = "block"; // 표시
+
+            // 0.8초 후에 숨기고 다음 문제 로드
+            displayTimeout = setTimeout(() => {
+                displayElement.style.display = "none"; // 숨김
+                current++;
+                loadNext();
+            }, 900);
+        }
+        updateStatus();
+    }
+
+    function skip() {
+        if (displayTimeout) clearTimeout(displayTimeout); // 타이머 취소
+        document.getElementById("correct-answer-display").style.display = "none"; // 표시 숨김
+        current++;
+        loadNext();
+    }
+
+    function stopQuiz() {
+        if (displayTimeout) clearTimeout(displayTimeout); // 타이머 취소
+        alert("퀴즈를 종료합니다.");
+        window.location.href = "index.html";
+    }
+
+    function retryWrong() {
+        if (displayTimeout) clearTimeout(displayTimeout); // 타이머 취소
+        document.getElementById("correct-answer-display").style.display = "none"; // 표시 숨김
+        students = [...wrongList];
+        current = 0;
+        correct = 0;
+        wrongList = [];
+        loadNext();
+    }
+
+    function updateStatus() {
+        const total = students.length;
+        const currentProgress = current + 1;
+        const progressText = `진행률: ${Math.min(currentProgress, total)} / ${total}`;
+        const accuracy = total > 0 ? (correct / Math.min(currentProgress, total) * 100).toFixed(1) : 0;
+        document.getElementById("status").textContent = `${progressText}, 정답률: ${accuracy}%`;
+    }
+
+    function enableChoiceButtons(enable) {
+        const buttons = document.querySelectorAll('.choice-btn');
+        buttons.forEach(button => {
+            button.disabled = !enable;
+        });
+    }
+</script>
+</body>
+</html>

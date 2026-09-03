@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>기록 보기</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+      font-size: 15px;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    td.name-cell {
+      width: 35px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .good {
+      color: blue;
+      font-weight: bold;
+    }
+    .bad {
+      color: red;
+      font-weight: bold;
+    }
+    td.time-cell, th.time-cell {
+      width: 40px;
+      word-break: keep-all;
+      white-space: nowrap;
+    }
+    .header-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+    #title {
+      flex-grow: 1;
+      text-align: center;
+      margin: 0;
+      font-size: 22px;
+      font-weight: bold;
+    }
+    #back {
+      position: absolute;
+      right: 0;
+      margin-right: 5px;
+      padding: 6px 14px;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    }
+  </style>
+
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vqru6iwnq8");
+</script>
+</head>
+<body>
+  <div class="header-row">
+    <h2 id="title">기록 보기</h2>
+    <button id="back" onclick="history.back()">뒤로</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>학번</th>
+        <th class="name-cell">이름</th>
+        <th>잘한 일</th>
+        <th>못한 일</th>
+        <th>기록자</th>
+        <th>시간</th>
+        <th>자세히</th>
+      </tr>
+    </thead>
+    <tbody id="record-body">
+      <tr><td colspan="7">불러오는 중...</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+  const urlParams = new URLSearchParams(location.search);
+  const grade = urlParams.get("grade");
+  const classNum = urlParams.get("class");
+
+  // ✅ 쿼리 파라미터 포함된 API URL (정상)
+  const apiUrl = `/student25/api/get-records.php?grade=${grade}&class=${classNum}`;
+
+  document.getElementById("title").textContent = `${grade}학년 ${classNum}반 기록 보기`;
+
+  function formatTimeText(raw) {
+    if (!raw || typeof raw !== "string") return "-";
+
+    const gasMatch = raw.match(/(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(오전|오후)\s*(\d{1,2}):(\d{2}):(\d{2})/);
+    if (gasMatch) {
+      let [_, year, month, day, ampm, hour, minute, second] = gasMatch;
+      hour = parseInt(hour, 10);
+      if (ampm === "오후" && hour < 12) hour += 12;
+      if (ampm === "오전" && hour === 12) hour = 0;
+      const date = new Date(year, month - 1, day, hour, minute, second);
+      return formatDateOutput(date);
+    }
+
+    const mysqlMatch = raw.match(/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/);
+    if (mysqlMatch) {
+      const [_, year, month, day, hour, minute, second] = mysqlMatch;
+      const date = new Date(year, month - 1, day, hour, minute, second);
+      return formatDateOutput(date);
+    }
+
+    return "-";
+  }
+
+  function formatDateOutput(date) {
+    const now = new Date();
+    const today = now.toDateString();
+    const recordDay = date.toDateString();
+
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const currentMinutes = hour * 60 + minute;
+
+    const periods = [
+      [9, 0, 9, 50],
+      [10, 0, 10, 50],
+      [11, 0, 11, 50],
+      [12, 0, 12, 50],
+      [13, 40, 14, 30],
+      [14, 40, 15, 30],
+      [15, 40, 16, 30]
+    ];
+
+    let period = "-";
+    for (let i = 0; i < periods.length; i++) {
+      const [sh, sm, eh, em] = periods[i];
+      const start = sh * 60 + sm;
+      const end = eh * 60 + em;
+      if (currentMinutes >= start && currentMinutes <= end) {
+        period = `${i + 1}교시`;
+        break;
+      }
+    }
+
+    if (today === recordDay) {
+      return `오늘<br>${period}`;
+    } else {
+      const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+      return `${diffDays}일 전<br>${period}`;
+    }
+  }
+
+  async function loadClassRecords() {
+  try {
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+
+    const filtered = data.filter(row => {
+      // ✅ 수정: row["학번"] 대신 row["student_id"] 사용
+      const num = String(row["student_id"] || "").trim();
+      return num.length >= 2 &&
+             num.charAt(0) === String(grade) &&
+             num.charAt(1) === String(classNum);
+    });
+
+    renderRecords(filtered);
+  } catch (err) {
+    console.error("❌ 불러오기 실패:", err);
+    document.getElementById("record-body").innerHTML = `<tr><td colspan="7">❌ 오류 발생</td></tr>`;
+  }
+}
+
+  function renderRecords(data) {
+    const tbody = document.getElementById("record-body");
+    tbody.innerHTML = "";
+
+    if (!data || data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7">기록이 없습니다.</td></tr>`;
+      return;
+    }
+
+    data.reverse().forEach(row => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${row["student_id"] || "-"}</td>
+        <td class="name-cell">${row["name"] || "-"}</td>
+        <td class="good">${row["good"] || "-"}</td>
+        <td class="bad">${row["bad"] || "-"}</td>
+        <td>${row["teacher"] || "-"}</td>
+        <td class="time-cell">${formatTimeText(row["time"] || "-")}</td>
+        <td>${row["detail"] || "-"}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  loadClassRecords();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>학생 생활기록</title>
+  <link rel="stylesheet" href="src/css/main.css?v=5.08">
+  <link rel="stylesheet" href="src/css/stu-list.css?v=5.08">
+  <link rel="stylesheet" href="src/css/record.css?v=5.08">
+
+  <script type="text/javascript">
+    (function (c, l, a, r, i, t, y) {
+      c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+      t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+      y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+    })(window, document, "clarity", "script", "vqru6iwnq8");
+  </script>
+</head>
+
+<body>
+
+  <!-- 상단 헤더 -->
+  <div class="header-row">
+    <button type="button" class="btn btn-back" aria-label="뒤로가기"></button>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <h2 id="pageTitle" style="margin:0;">...</h2>
+    </div>
+    <button type="submit" form="recordForm" class="btn btn-save" id="submitBtn">저장</button>
+  </div>
+
+  <form id="recordForm">
+    <!-- 숨김 필드 -->
+    <!-- 잘한 일 / 못한 일 (v4.23: 칩 형태로 변경) -->
+    <div class="behavior-row" id="behavior-section">
+      <div class="behavior-group-good">
+        <label style="color: #1a73e8;">잘한 일 (중복 선택 가능)</label>
+        <div id="good-chips" class="chip-container">
+          <!-- JS에서 칩 생성 -->
+        </div>
+      </div>
+      <div class="behavior-group-bad" style="margin-top: 20px;">
+        <label style="color: #ea4335;">못한 일 (중복 선택 가능)</label>
+        <div id="bad-chips" class="chip-container">
+          <!-- JS에서 칩 생성 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- [v4.22] 기록 시간 선택 (자세히 위로 이동 및 선택형으로 변경) -->
+    <div id="time-toggle-section" style="margin-bottom: 15px; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <input type="checkbox" id="useCustomTime" style="width: 18px; height: 18px; cursor: pointer;">
+        <label for="useCustomTime" style="font-size: 0.9rem; font-weight: 700; color: #475569; cursor: pointer;">📅 기록 시간 직접 설정 (소급 입력)</label>
+      </div>
+      <input type="datetime-local" id="recordTime" disabled style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; color: #1e293b; background: #f1f5f9; outline: none; transition: all 0.2s;">
+    </div>
+
+    <!-- 자세히 -->
+    <div class="label-row-with-btn"
+      style="display: flex; gap: 8px; justify-content: flex-start; align-items: center; flex-wrap: wrap; margin-bottom: 6px;">
+      <label for="detail" style="margin: 0; white-space: nowrap; flex-shrink: 0;">자세히</label>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button type="button" class="btn-survey-view"
+          style="color: #03c75a; border-color: #03c75a; background-color: #f0fdf4;"
+          onclick="window.open('https://clovanote.naver.com', '_blank')">
+          🟢 클로바노트
+        </button>
+        <button type="button" id="viewSurveyBtn" class="btn-survey-view" style="display: none;">
+          📖 위 학생 기초조사
+        </button>
+      </div>
+    </div>
+    <textarea id="detail" placeholder="상세 내용 입력"></textarea>
+
+
+    <div class="photo-attachment-section">
+      <label class="left-align-label">📸 사진 첨부 (반성문, 수첩 기록 등)</label>
+
+      <!-- 사진 첨부 3단 버튼 -->
+      <div class="photo-action-grid">
+        <label for="cameraInput" class="photo-action-item">
+          <div class="action-icon-circle" style="background: #fff0f6; color: #eb2f96;">📸</div>
+          <span class="action-label">카메라</span>
+          <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;">
+        </label>
+
+        <label class="photo-action-item" onclick="openVFlat()">
+          <div class="action-icon-circle" style="background: #e6f7ff; color: #1890ff;">✨</div>
+          <span class="action-label">vFlat</span>
+        </label>
+
+        <label for="galleryInput" class="photo-action-item">
+          <div class="action-icon-circle" style="background: #f6ffed; color: #52c41a;">🖼️</div>
+          <span class="action-label">갤러리</span>
+          <input type="file" id="galleryInput" accept="image/*" style="display:none;">
+        </label>
+      </div>
+
+      <!-- 선택된 파일 표시 전용 (통합 관리) -->
+      <div id="fileNameDisplay" class="file-name-display" style="display:none; margin-top:10px; text-align:center;">선택된
+        파일 없음</div>
+
+      <div id="photoPreviewContainer" class="photo-preview-container">
+        <!-- 사진 미리보기가 여기에 표시됩니다 -->
+      </div>
+    </div>
+  </form>
+
+  <div class="record-log">
+    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 12px; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 8px; position: relative; width: 100%;">
+      <h3 style="margin: 0; border: none; padding: 0; text-align: center; width: 100%;">📚 기록 내역</h3>
+      <button type="button" id="print-record-btn" title="이 학생 기록 인쇄" style="position: absolute; right: 0; background: #f1f5f9; border: 1.5px solid #e2e8f0; font-size: 0.95rem; cursor: pointer; padding: 6px 12px; border-radius: 10px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">🖨️ 인쇄</button>
+    </div>
+    <div id="logContainer">⏳ 기록을 불러오는 중입니다...</div>
+  </div>
+
+  <!-- 기초조사 팝업 레이어 -->
+  <div id="overlay"></div>
+  <div id="popup"></div>
+
+  <!-- 사진 뷰어 팝업 -->
+  <div id="photoViewerOverlay"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; justify-content:center; align-items:center;">
+    <button type="button" onclick="closePhotoViewer()"
+      style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.5); border-radius:50%; width:44px; height:44px; font-size:20px; cursor:pointer; display:flex; justify-content:center; align-items:center; transition:background 0.2s;">✕</button>
+    <img id="photoViewerImg" src=""
+      style="max-width:95%; max-height:90%; object-fit:contain; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+  </div>
+
+  <script type="module" src="src/js/record.js?v=5.08"></script>
+</body>
+
+</html>

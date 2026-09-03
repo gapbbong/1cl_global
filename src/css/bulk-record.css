@@ -1,0 +1,522 @@
+@charset "UTF-8";
+
+/* 전체 레이아웃 */
+/* 상단 헤더 스타일 (record.css와 동일하게) */
+.header-row {
+    position: relative;
+    /* 자식 요소의 절대 배치를 위한 기준점 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 타이틀을 가로 중앙에 배치 */
+    width: 100%;
+    min-height: 70px;
+    padding: 0 20px;
+    background-color: white;
+    border-bottom: 1px solid #f0f0f0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-row h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    /* 살짝 더 크게 */
+    font-weight: 800;
+    color: #222;
+    text-align: center;
+}
+
+.btn-back {
+    position: absolute;
+    /* 헤더의 흐름에서 완전히 제외 */
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    /* 살짝 더 크게 */
+    height: 42px;
+    padding: 0;
+    background-color: white;
+    color: #555;
+    border: 1px solid #e0e0e0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    z-index: 110;
+}
+
+.btn-back:hover {
+    background-color: #f8f9fa;
+    color: #1a73e8;
+    border-color: #1a73e8;
+    transform: translateY(-50%) scale(1.1);
+    /* translateY 유지하며 확대 */
+    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2);
+}
+
+.btn-back::before {
+    content: "←";
+    font-size: 20px;
+    font-weight: normal;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 15px;
+    /* 모바일 환경 좌우 여백 최적화 */
+}
+
+.section {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px 15px;
+    /* 내부 여백 축소 */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+/* 검색 섹션 */
+.input-group.search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+#student-input {
+    flex: 7;
+    /* 7 비율 */
+    min-width: 0;
+    /* 넘침 방지 */
+    padding: 12px 18px;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    font-size: 1.1em;
+    transition: border-color 0.3s;
+}
+
+#student-input:focus {
+    border-color: #4A90E2;
+    outline: none;
+}
+
+.search-btn {
+    flex: 3;
+    /* 3 비율 */
+    padding: 12px 0;
+    /* 내부 정렬을 위해 padding 단순화 */
+    background: #4A90E2;
+    /* 저장하기 버튼과 동일한 배경 */
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-weight: 800;
+    /* 잘한 일 라벨과 동일한 두께 */
+    font-size: 0.95em;
+    /* 잘한 일 라벨(0.95em)과 동일한 크기 */
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    /* 저장 버튼 형태의 그림자 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-btn:hover {
+    background: #357ABD;
+    transform: translateY(-2px);
+    /* 호버 시 약간 띄움 효과 */
+}
+
+.help-text {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* 사진 크기 조절 */
+.size-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    /* 간격 축소 */
+    margin: 15px 0 25px;
+    padding: 10px 15px;
+    /* 여백 축소 */
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 16px;
+    font-size: 0.9em;
+    /* 폰트 약간 축소 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    flex-wrap: wrap;
+    /* 좁은 화면 보완 */
+}
+
+.size-control .label {
+    font-weight: 800;
+    color: #333;
+}
+
+.size-btn-group {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-size {
+    padding: 8px 15px;
+    /* 좌우 패딩 대폭 축소 */
+    min-width: 60px;
+    /* 고정 너비 축소 */
+    background: #f1f3f5;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 0.85em;
+    /* 폰트 축소 */
+    font-weight: 700;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    /* 텍스트 줄바꿈 방지 */
+}
+
+.btn-size.active {
+    background: #4A90E2;
+    color: #fff;
+    border-color: #357ABD;
+    box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+}
+
+/* 학생 그리드 */
+.student-grid {
+    --card-width: 150px;
+    --font-size: 1.1em;
+    /* 동적 폰트 크기 변수 추가 */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--card-width), 1fr));
+    gap: 16px;
+    min-height: 120px;
+    border: 2px dashed #eee;
+    border-radius: 16px;
+    padding: 16px;
+    background: #fafafa;
+}
+
+.empty-msg {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: #aaa;
+    font-weight: 500;
+}
+
+.student-card {
+    position: relative;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s;
+    border: 1px solid #eee;
+}
+
+.student-card img {
+    width: 100%;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+    border-bottom: 1px solid #eee;
+    transition: filter 0.3s;
+}
+
+.student-card.not-active img {
+    /* filter: blur(2px) grayscale(50%); */ /* 자퇴/전출 학생 사진 흐리게 처리 제외 (교사 요청) */
+    /* opacity: 0.7; */
+}
+
+.student-card .info {
+    padding: 12px;
+    text-align: center;
+    font-weight: 900;
+    /* 기존 700에서 더 두껍게 */
+    font-size: var(--font-size);
+    /* 변수 적용 */
+    /* 기존 1.1em에서 약 20% 상향 */
+    color: #222;
+    transition: font-size 0.2s;
+    /* 부드러운 전환 */
+}
+
+.remove-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    z-index: 20;
+}
+
+.status-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(231, 76, 60, 0.9);
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 8px;
+    font-size: 0.7em;
+    font-weight: 800;
+    z-index: 15;
+}
+
+/* 기록 폼 섹션 */
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* 모바일 폼 세로 정렬 대응 */
+@media (max-width: 500px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 800;
+    color: #444;
+    font-size: 0.95em;
+    margin-left: 4px;
+}
+
+select,
+textarea,
+#teacher-input {
+    padding: 12px;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    font-size: 1em;
+    transition: border-color 0.3s;
+}
+
+textarea {
+    resize: none;
+}
+
+select:focus,
+textarea:focus,
+#teacher-input:focus {
+    border-color: #4A90E2;
+    outline: none;
+}
+
+.save-btn {
+    margin-top: 10px;
+    padding: 16px;
+    background: #4A90E2;
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.1em;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+}
+
+.save-btn:hover:not(:disabled) {
+    background: #357ABD;
+    transform: translateY(-2px);
+}
+
+/* [v4.23] 칩(태그) 스타일 */
+.chip-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+
+.chip {
+    padding: 10px 16px;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.chip:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
+/* 잘한 일 액티브 (블루 계열) */
+.chip.good.active {
+    background: #1a73e8;
+    color: white;
+    border-color: #1a73e8;
+    box-shadow: 0 4px 10px rgba(26, 115, 232, 0.25);
+}
+
+/* 못한 일 보이스 (레드 계열) */
+.chip.bad.active {
+    background: #ff4d4f;
+    color: white;
+    border-color: #f5222d;
+    box-shadow: 0 4px 10px rgba(255, 77, 79, 0.25);
+}
+
+.chip.active {
+    transform: scale(0.95);
+}
+
+.save-btn:disabled {
+    background: #ccc;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+/* 커스텀 모달 */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: #fff;
+    width: 95%;
+    max-width: 550px;
+    /* 기존 500px에서 10% 추가 상향 */
+    border-radius: 32px;
+    padding: 35px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.28);
+    transform: translateY(20px);
+    animation: slideUp 0.3s ease forwards;
+}
+
+@keyframes slideUp {
+    to {
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.modal-icon {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.3em;
+    color: #222;
+    font-weight: 800;
+}
+
+.modal-body {
+    text-align: center;
+    color: #222;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    font-size: 2em;
+    font-weight: 900;
+    white-space: pre-line;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 12px;
+}
+
+.modal-footer button {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    font-size: 1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cancel {
+    background: #f1f3f5;
+    color: #495057;
+}
+
+.btn-confirm {
+    background: #4A90E2;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.btn-confirm:hover {
+    background: #357ABD;
+    transform: translateY(-2px);
+}

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일괄 생활기록</title>
+    <link rel="stylesheet" href="src/css/main.css?v=5.08">
+    <link rel="stylesheet" href="src/css/bulk-record.css?v=5.08">
+
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vqru6iwnq8");
+</script>
+</head>
+
+<body>
+    <div class="header-row">
+        <button type="button" class="btn-back" aria-label="뒤로가기"
+            onclick="const from = new URLSearchParams(window.location.search).get('from'); location.href = (from === 'keeper' ? 'keeper.html' : 'index.html')"></button>
+        <h2 id="pageTitle">일괄 생활기록</h2>
+    </div>
+
+    <div class="container">
+        <!-- 1. 학생 검색 및 리스트 -->
+        <div class="section search-section">
+            <div class="input-group search-box">
+                <input type="number" id="student-input" placeholder="학번 4자리..." maxlength="4" pattern="\d*">
+                <button id="search-btn" class="search-btn">조회</button>
+            </div>
+            <p class="help-text">학번을 입력하고 [조회]를 누르거나 Enter를 치세요.</p>
+
+            <!-- 사진 크기 조절 버튼 그룹 추가 -->
+            <div class="size-control">
+                <span class="label">📸 사진 크기</span>
+                <div class="size-btn-group">
+                    <button type="button" class="btn-size" data-size="140">작게</button>
+                    <button type="button" class="btn-size" data-size="200">보통</button>
+                    <button type="button" class="btn-size" data-size="260">크게</button>
+                </div>
+            </div>
+
+            <div id="selected-students" class="student-grid">
+                <!-- 추가된 학생 카드가 여기에 표시됨 -->
+                <div class="empty-msg">선택된 학생이 없습니다.</div>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- 2. 공통 기록 폼 -->
+        <div class="section form-section">
+            <div class="form-row" style="display: block;">
+                <div class="form-group">
+                    <label style="color: #1a73e8;">잘한 일 (중복 선택 가능)</label>
+                    <div id="good-chips" class="chip-container">
+                        <!-- JS에서 칩 생성 -->
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label style="color: #ea4335;">못한 일 (중복 선택 가능)</label>
+                    <div id="bad-chips" class="chip-container">
+                        <!-- JS에서 칩 생성 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- [v4.22] 기록 시간 선택 (선택형으로 변경) -->
+            <div class="form-group" style="margin: 15px 0; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <input type="checkbox" id="use-custom-time" style="width: 18px; height: 18px; cursor: pointer;">
+                    <label for="use-custom-time" style="font-size: 0.9rem; font-weight: 700; color: #475569; cursor: pointer;">📅 기록 시간 직접 설정 (소급 입력)</label>
+                </div>
+                <input type="datetime-local" id="record-time" disabled style="width: 100%; border: 1px solid #cbd5e1; padding: 8px; border-radius: 6px; font-size: 0.95rem; background: #f1f5f9; outline: none; transition: all 0.2s;">
+            </div>
+
+            <div class="form-group">
+                <label>상세 내용</label>
+                <textarea id="detail-input" placeholder="상세 내용을 입력하세요..." rows="3"></textarea>
+            </div>
+
+
+            <button id="save-all-btn" class="save-btn">일괄 저장하기 (0명)</button>
+        </div>
+    </div>
+
+    <!-- 커스텀 확인 모달 추가 -->
+    <div id="custom-modal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-icon">⚠️</span>
+                <h3>학적 변동 안내</h3>
+            </div>
+            <div class="modal-body">
+                <p id="modal-msg">안내 메시지가 여기에 표시됩니다.</p>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-cancel" class="btn-cancel">취소</button>
+                <button id="modal-confirm" class="btn-confirm">추가하기</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="src/js/bulk-record.js?v=5.08"></script>
+</body>
+
+</html>

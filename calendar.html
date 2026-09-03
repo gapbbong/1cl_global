@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>학교 일정 캘린더</title>
+    <link rel="icon" href="oneclass_favicon.ico?v=5.08" type="image/x-icon">
+    <link rel="shortcut icon" href="oneclass_favicon.ico?v=5.08" type="image/x-icon">
+    <link rel="apple-touch-icon" href="icons/oneclass_192.png?v=5.08">
+    <link rel="stylesheet" href="src/css/main.css?v=5.08">
+    <style>
+        body {
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .calendar-container {
+            padding: 15px;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0 auto;
+            padding-bottom: 80px;
+        }
+
+        .calendar-header {
+            display: none;
+            /* 헤더 제거 */
+        }
+
+        /* 상단 플로팅 헤더 (V3.7.8: 정밀 정렬) */
+        .floating-top-header {
+            position: fixed;
+            top: 15px;
+            left: 10px;
+            right: 10px;
+            height: 44px;
+            /* 높이 고정으로 수평 정합 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 2000;
+            background: transparent;
+            pointer-events: none;
+        }
+
+        .header-item-pill {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 0 14px;
+            height: 40px;
+            /* 높이 통일 */
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            pointer-events: auto;
+        }
+
+        .header-btn-pill {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .header-btn-pill:active {
+            transform: scale(0.95);
+        }
+
+        .header-btn-pill.academic {
+            background: #4A90E2;
+            color: #fff;
+            border: none;
+            font-weight: 800;
+            font-size: 0.88rem;
+        }
+
+        .header-btn-pill.home {
+            width: 40px;
+            /* 정원형 */
+            padding: 0;
+            color: #555;
+            font-size: 1.2rem;
+        }
+
+        .fab-btn:active {
+            transform: scale(0.92);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .fab-back {
+            color: #555;
+        }
+
+        .fab-academic {
+            background: #4A90E2;
+            color: white;
+            border: none;
+        }
+
+        .calendar-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+            color: #4A90E2;
+            font-weight: 800;
+        }
+
+        .calendar-title-sub {
+            font-size: 0.9rem;
+            color: #777;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .nav-btn {
+            background: #f1f5f9;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .day-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .day-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            border-left: 6px solid #ccc;
+        }
+
+        .day-card.today {
+            background: #f0f7ff;
+            box-shadow: 0 0 10px rgba(51, 153, 255, 0.2);
+        }
+
+        .day-info {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .date-num {
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .day-name {
+            font-size: 1.25rem;
+            font-weight: 800;
+        }
+
+        /* 월 구분선 (V3.7.9: 플로팅 제거, 수평 정합) */
+        .month-separator {
+            margin: 0 45px;
+            /* 좌우 여백 추가 축소 */
+            height: 40px;
+            /* 버튼 높이(40px)와 완벽 일치 */
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            pointer-events: none;
+            /* position: sticky 제거 */
+        }
+
+        .month-separator .m-text {
+            color: #4A90E2;
+            font-weight: 900;
+            font-size: 1.45rem;
+            /* 1.15rem -> 1.45rem (개별 날짜 1.25rem보다 크게) */
+            line-height: 1;
+        }
+
+        .month-separator .s-text {
+            color: #ccc;
+            font-size: 0.72rem;
+            /* 0.65rem -> 0.72rem */
+            letter-spacing: 1px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .month-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .month-fold-btn {
+            position: absolute;
+            right: 15px;
+            bottom: 8px;
+            font-size: 0.85rem;
+            /* 크기 확대 (0.7 -> 0.85) */
+            background: #ffffff;
+            color: #4A90E2;
+            border: 2px solid #4A90E2;
+            padding: 4px 12px;
+            /* 패딩 확대 */
+            border-radius: 20px;
+            /* 더 둥글게 */
+            font-weight: 800;
+            pointer-events: auto;
+            box-shadow: 0 2px 6px rgba(74, 144, 226, 0.2);
+            transition: all 0.2s;
+        }
+
+        .month-fold-btn:active {
+            transform: scale(0.95);
+            background: #eef6ff;
+        }
+
+        /* JS에서 display를 제어하므로 CSS 강제 숨김 제거 (다음 달 영향 방지) */
+
+        .month-separator::after {
+            display: none;
+            /* 기존 가상 요소 제거 (한 줄 배치로 이동) */
+        }
+
+        .schedule-text {
+            color: #bbb;
+            letter-spacing: 1px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            /* 크기 축소 */
+            margin-top: 2px;
+        }
+
+        /* [V3.8.5] 강조 애니메이션 정밀 조정: 더 천천히(1.2s), 더 길게(5회) */
+        @keyframes date-pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.18);
+                color: #FF3B30;
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* 1. 주말 시 다음 월요일 강조 */
+        .next-monday-pulse .day-name {
+            display: inline-block;
+            animation: date-pulse 1.2s ease-in-out 5;
+        }
+
+        /* 2. 오늘 날짜 강조 (가독성 강화) */
+        .day-card.today .day-name {
+            display: inline-block;
+            animation: date-pulse 1.2s ease-in-out 5;
+            font-weight: 900;
+        }
+
+        /* 요일별 고유 색상 정의 (띠 & 글자 동기화) */
+        .day-card.sun {
+            border-left-color: #ea4335;
+        }
+
+        .day-card.sun .date-num,
+        .day-card.sun .day-name {
+            color: #ea4335;
+        }
+
+        .day-card.mon {
+            border-left-color: #f57c00;
+        }
+
+        .day-card.mon .date-num,
+        .day-card.mon .day-name {
+            color: #f57c00;
+        }
+
+        .day-card.tue {
+            border-left-color: #388e3c;
+        }
+
+        .day-card.tue .date-num,
+        .day-card.tue .day-name {
+            color: #388e3c;
+        }
+
+        .day-card.wed {
+            border-left-color: #1976d2;
+        }
+
+        .day-card.wed .date-num,
+        .day-card.wed .day-name {
+            color: #1976d2;
+        }
+
+        .day-card.thu {
+            border-left-color: #7b1fa2;
+        }
+
+        .day-card.thu .date-num,
+        .day-card.thu .day-name {
+            color: #7b1fa2;
+        }
+
+        .day-card.fri {
+            border-left-color: #00796b;
+        }
+
+        .day-card.fri .date-num,
+        .day-card.fri .day-name {
+            color: #00796b;
+        }
+
+        .day-card.sat {
+            border-left-color: #303f9f;
+        }
+
+        .day-card.sat .date-num,
+        .day-card.sat .day-name {
+            color: #303f9f;
+        }
+
+        .event-item {
+            font-size: 1.05rem;
+            /* 0.95rem -> 1.05rem (약 1px+ 키움) */
+            color: #000;
+            /* 완전 검정 */
+            padding: 6px 0;
+            border-bottom: 1px dashed #eee;
+            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            gap: 2px;
+            /* 간격을 2px로 더 축소 */
+            word-break: keep-all;
+            overflow-wrap: anywhere;
+        }
+
+        .event-title {
+            flex: 1;
+            /* 들여쓰기 속성 제거: 두 번째 줄이 첫 번째 줄 시작점과 일치하게 됨 */
+        }
+
+        .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-tag {
+            font-size: 0.72rem;
+            color: #666;
+            font-weight: 700;
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .event-tag.changche {
+            background: transparent;
+            padding: 0;
+            margin-left: 0;
+            margin-right: 4px;
+            font-size: 1rem;
+            /* 제목과 동일 */
+            color: #000;
+            font-weight: 800;
+        }
+
+        .event-tag.changche {
+            background: transparent;
+            padding: 0;
+            margin-left: 0;
+            margin-right: 4px;
+            font-size: 1rem;
+            /* 제목과 동일 */
+            color: #000;
+            font-weight: 800;
+        }
+
+        .event-seq {
+            color: #4A90E2;
+            font-weight: 800;
+            flex-shrink: 0;
+            margin-right: 6px;
+            /* 1만 여유 (시각적으로 약 6px-8px) */
+            min-width: auto;
+        }
+
+        .event-dept {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .no-event {
+            color: #999;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        .version-tag {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 0.7rem;
+            color: #ccc;
+        }
+
+        /* 로딩 스피너 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+        }
+
+        /* 로딩 바 스타일 추가 (v3.0.1) */
+        .loading-gauge-container {
+            width: 240px;
+            height: 8px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            margin-top: 15px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading-gauge-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border-radius: 10px;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 인증 모달 추가 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .contact-modal-content {
+            background: #fff;
+            padding: 24px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bulk-submit-btn {
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .bulk-submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 하단 컨트롤러 추가 */
+        .calendar-controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+            padding: 0 5px;
+        }
+
+        .ctrl-btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-next {
+            background: #4A90E2;
+            color: white;
+        }
+
+        .btn-all {
+            background: #ffffff;
+            color: #555;
+            border: 1px solid #ddd;
+        }
+
+        .ctrl-btn:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading-text-detail {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        /* 연간 일정 팝업 스타일 */
+        .academic-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            /* 검정 여백 방지를 위해 배경을 흰색으로 변경 */
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .academic-popup-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .academic-popup-content {
+            width: 100%;
+            max-width: none;
+            height: 100%;
+            /* vh 대신 100% 사용하여 브라우저 바 가림 최소화 */
+            background: #fff;
+            border-radius: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: none;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
+            padding: 0;
+            margin: 0;
+        }
+
+        .academic-popup-overlay.active .academic-popup-content {
+            transform: translateY(0);
+        }
+
+        .academic-popup-header {
+            padding: 8px 15px;
+            background: #4A90E2;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 44px;
+        }
+
+        .academic-popup-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .close-popup-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .academic-popup-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background: #f1f5f9;
+        }
+
+        /* 팝업 내 격자형 달력 */
+        .academic-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .academic-month-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .academic-month-title {
+            font-size: 1.3rem;
+            /* 1.1rem -> 1.3rem 확대 */
+            font-weight: 800;
+            color: #4A90E2;
+            margin-bottom: 12px;
+            padding-left: 5px;
+            border-left: 4px solid #4A90E2;
+        }
+
+        .academic-day-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            /* 7열 -> 5열, minmax(0, 1fr)로 너비 고정 */
+            gap: 2px;
+            width: 100%;
+        }
+
+        .academic-day-header {
+            text-align: center;
+            font-size: 0.8rem;
+            /* 0.65rem -> 0.8rem 확대 */
+            font-weight: 800;
+            color: #000 !important;
+            padding-bottom: 5px;
+        }
+
+        /* 오늘 날짜 강조 및 2회 깜빡임 효과 (v2.33) */
+        .academic-day-cell.is-today {
+            border: 2.5px solid #4A90E2 !important;
+            box-shadow: 0 0 12px rgba(74, 144, 226, 0.4);
+            z-index: 10;
+            position: relative;
+            animation: today-blink 0.8s ease-in-out 2;
+        }
+
+        @keyframes today-blink {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: scale(1.03);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .academic-day-cell {
+            min-height: 64px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 4px 2px;
+            font-size: 0.75rem;
+            position: relative;
+            background: #fafafa;
+            border: 1px solid #f1f5f9;
+            /* overflow: hidden 제거 (세로 확장 허용) */
+        }
+
+        .academic-day-num {
+            font-weight: bold;
+            margin-bottom: 1px;
+            font-size: 0.85rem;
+            /* 0.7rem -> 0.85rem 확대 */
+        }
+
+        .academic-day-event {
+            font-size: 0.8rem;
+            font-weight: 800;
+            line-height: 1.1;
+            text-align: center;
+            word-break: break-all;
+            /* 줄 수 제한 제거 (세로 확장) */
+            margin-top: 1px;
+            width: 100%;
+        }
+
+        .academic-day-cell.holiday .academic-day-num {
+            color: #ff3b30;
+        }
+
+        .academic-day-cell.saturday .academic-day-num {
+            color: #4a90e2;
+        }
+
+        .academic-day-cell.other-month {
+            opacity: 0.2;
+        }
+
+        .academic-day-cell.has-event {
+            background: #eef6ff;
+        }
+
+        @media (max-width: 600px) {
+            .academic-grid-container {
+                grid-template-columns: 1fr;
+            }
+
+            .academic-popup-content {
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p style="font-weight: 800; color: #1e293b; margin: 0;">일정을 불러오고 있습니다... <span id="loading-percent">(0%)</span>
+        </p>
+        <div class="loading-gauge-container">
+            <div id="loading-gauge-bar" class="loading-gauge-fill"></div>
+        </div>
+        <div class="loading-text-detail" style="font-size: 0.85rem; margin-top: 8px; color: #64748b; font-weight: 500;">
+        </div>
+    </div>
+
+    <div class="floating-top-header">
+        <div id="btn-back-home" class="header-item-pill header-btn-pill home" title="홈으로">🏠</div>
+        <div id="btn-filter-academic" class="header-item-pill header-btn-pill academic">📅 연간일정</div>
+    </div>
+
+    <div class="calendar-container">
+        <!-- 헤더 제거됨 -->
+
+        <div id="day-list" class="day-list">
+            <!-- 요일 카드들이 동적으로 생성됩니다 -->
+        </div>
+
+        <div class="calendar-controls">
+            <button id="btn-next-month" class="ctrl-btn btn-next">📅 다음 달 보기</button>
+            <button id="btn-full-year" class="ctrl-btn btn-all">📅 26학년도 전체</button>
+        </div>
+    </div>
+
+    <!-- 이메일 인증 모달 (초기 접속 시) -->
+    <div id="auth-modal" class="modal"
+        style="display: none; z-index: 10000; align-items: center; justify-content: center; background: #f3f4f6;">
+        <div class="modal-content contact-modal-content"
+            style="padding: 24px; max-width: 380px; text-align: center; border-radius: 16px;">
+            <h3 style="margin-top: 0; color: #4A90E2; font-size: 1.5em; font-weight: 800;">선생님 인증</h3>
+            <p style="font-size: 1em; color: #444; margin-bottom: 24px;">
+                서비스를 이용하시려면<br /><strong style="color: #333;">학교에 제출하신 이메일</strong>을 입력해주세요.
+            </p>
+            <input type="email" id="auth-email-input" placeholder="example@school.com"
+                style="width: 100%; padding: 16px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 20px; font-size: 1.1em; font-weight: bold; text-align: center; box-sizing: border-box; outline: none; transition: border-color 0.2s;">
+            <button id="auth-submit-btn" class="bulk-submit-btn"
+                style="width: 100%; border-radius: 8px; padding: 20px; font-size: 1.1em; font-weight: bold; background-color: #4A90E2; color: #fff; border: none; cursor: pointer;">인증하기</button>
+            <p id="auth-error-msg"
+                style="color: #FF3B30; font-size: 0.9em; margin-top: 14px; display: none; font-weight: bold;"></p>
+            <div
+                style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #ddd; text-align: left; font-size: 0.85em; color: #555; line-height: 1.5;">
+                <p style="color: #FF3B30; font-weight: bold; margin: 0 0 8px 0;">⚠️ 주의: 본교 근무 교사 외에는 인증하지 마십시오.</p>
+                <p style="margin: 0;">이메일을 모르시거나 접속 문제가 있을 경우 <strong>전문부 이갑종 선생님</strong>에게 문의해 주세요.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 연간 학사일정 팝업 -->
+    <div id="academic-popup-overlay" class="academic-popup-overlay">
+        <div class="academic-popup-content">
+            <div class="academic-popup-header">
+                <h2>📅 2026학년도 연간 학사일정</h2>
+                <button id="close-academic-btn" class="close-popup-btn">&times;</button>
+            </div>
+            <div class="academic-popup-body">
+                <div id="academic-grid" class="academic-grid-container">
+                    <!-- JS에서 월별 달력이 주입됨 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- .version-tag removed in v4.57 -->
+    <script src="src/js/calendar.js?v=5.08" type="module"></script>
+</body>
+
+</html>

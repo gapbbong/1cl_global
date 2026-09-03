@@ -1,0 +1,51 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+
+.photo-box img {
+  width: 300px;
+  height: auto;
+  border-radius: 12px;
+  border: 2px solid #ccc;
+}
+
+.btn-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.btn-grid button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.bottom-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.feedback-overlay {
+  position: absolute;
+  font-size: 48px;
+  font-weight: bold;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  color: red;
+}
+
+.name-display {
+  font-size: 20px;
+  margin: 10px 0;
+}

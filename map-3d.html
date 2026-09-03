@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>3D 교실/실습실 지도</title>
+    <link rel="stylesheet" href="src/css/main.css?v=4.36">
+    <link rel="stylesheet" href="src/css/map-3d.css?v=4.36">
+</head>
+<body>
+    <header class="search-header">
+        <button class="back-btn" onclick="location.href='index.html'" title="홈으로">🏠</button>
+        <h1>🏫 3D 건물 지도</h1>
+        <button class="list-view-btn" onclick="location.href='room-search.html'" title="목록 보기">📋</button>
+    </header>
+
+    <main id="map-container">
+        <!-- Three.js Canvas will be here -->
+        <div id="labels-container"></div>
+        
+        <div id="map-controls">
+            <div class="floor-selector">
+                <button class="floor-btn" data-floor="8">8F</button>
+                <button class="floor-btn" data-floor="7">7F</button>
+                <button class="floor-btn" data-floor="6">6F</button>
+                <button class="floor-btn" data-floor="5">5F</button>
+                <button class="floor-btn" data-floor="4">4F</button>
+                <button class="floor-btn" data-floor="3">3F</button>
+                <button class="floor-btn" data-floor="2">2F</button>
+                <button class="floor-btn active" data-floor="1">1F</button>
+                <button class="floor-btn" data-floor="all">ALL</button>
+            </div>
+            
+            <div class="view-controls">
+                <button id="reset-view" title="시점 리셋">🔄</button>
+            </div>
+        </div>
+
+        <div id="room-info-panel" class="glass-panel" style="display:none;">
+            <h3 id="room-title">101호</h3>
+            <p id="room-desc">전기기능부실</p>
+            <button id="close-panel">닫기</button>
+        </div>
+
+        <div id="instructions">
+            마우스 드래그: 회전 | 휠: 확대/축소 | 우클릭 드래그: 이동
+        </div>
+    </main>
+
+    <!-- load Three.js from CDN -->
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three@0.162.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.162.0/examples/jsm/"
+          }
+        }
+    </script>
+    <script type="module" src="src/js/map-3d.js?v=4.39"></script>
+</body>
+</html>

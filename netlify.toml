@@ -1,0 +1,28 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # Non-deployed dirs: DB backup dumps + archived mini-apps + scratch scripts.
+  # The deployed bundle (dist/) and all first-party source are still scanned.
+  SECRETS_SCAN_OMIT_PATHS = "_legacy/**,backups/**,_backup_private/**,temp_unzip/**,node_tmp/**,scratch/**"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Secure API gateway. Served by the EDGE function (Deno, runs at the PoP nearest
+# the user) — ~350ms faster per call than the us-east-1 Lambda.
+# The Lambda (netlify/functions/api.mjs) stays as a fallback.
+#   ROLLBACK: delete/rename netlify/edge-functions/api.js and redeploy — the
+#   redirect below then routes /api/* back to the Lambda automatically.
+[[edge_functions]]
+  path = "/api/*"
+  function = "api"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true

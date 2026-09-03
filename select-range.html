@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>퀴즈 시작</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 30px 20px;
+      background: #f4f6f8;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: clamp(24px, 6vw, 36px);
+      margin-bottom: 24px;
+    }
+
+    select {
+      width: 220px;
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 14px 30px;
+      font-size: 18px;
+      background: #3399ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #2277dd;
+    }
+  </style>
+
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vqru6iwnq8");
+</script>
+</head>
+<body>
+  <h2>🎯 사진 이름 퀴즈 시작</h2>
+
+  <div>
+    <select id="range-grade">
+      <option value="">전체 학년</option>
+      <option value="1">1학년</option>
+      <option value="2">2학년</option>
+      <option value="3">3학년</option>
+    </select>
+
+    <select id="range-dept">
+      <option value="">전체 학과</option>
+      <option value="iot">IoT전기과</option>
+      <option value="game">게임콘텐츠과</option>
+    </select>
+
+    <select id="range-class">
+      <option value="">전체 반</option>
+      <!-- 1~3학년 × 6개 반 = 18개 옵션 -->
+      ${[1,2,3].flatMap(g =>
+        [1,2,3,4,5,6].map(c => `<option value="${g}-${c}">${g}학년 ${c}반</option>`)
+      ).join('')}
+    </select>
+  </div>
+
+  <button onclick="startQuiz()">퀴즈 시작</button>
+
+  <script>
+    function startQuiz() {
+      const grade = document.getElementById("range-grade").value;
+      const dept = document.getElementById("range-dept").value;
+      const cls = document.getElementById("range-class").value;
+
+      // 파라미터로 전달
+      const params = new URLSearchParams();
+      if (grade) params.append("grade", grade);
+      if (dept) params.append("dept", dept);
+      if (cls) {
+        const [g, c] = cls.split("-");
+        params.set("grade", g);
+        params.set("class", c);
+      }
+
+      window.location.href = "quiz.html?" + params.toString();
+    }
+  </script>
+</body>
+</html>

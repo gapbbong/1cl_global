@@ -1,0 +1,17 @@
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    - cron: '0 3 */5 * *'   # 5일마다 (방학 중 무접속으로 프로젝트가 일시중지되는 것 방지)
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 게이트웨이 경유로 DB 한 번 건드리기 (키 불필요)
+        run: |
+          curl -sS -o /dev/null -w "HTTP %{http_code}\n" \
+            -X POST https://1cl.netlify.app/api/login \
+            -H 'content-type: application/json' \
+            -d '{"email":"keepalive@noop.invalid"}'

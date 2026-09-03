@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>교사 설정 - OneClass</title>
+    <link rel="stylesheet" href="src/css/main.css?v=4.79">
+    <link rel="stylesheet" href="src/css/settings.css?v=4.79">
+</head>
+<body class="settings-page">
+    <div class="settings-header">
+        <button class="back-btn" onclick="location.href='index.html?force=home'">🏠</button>
+        <h1>⚙️ 교사 개인 설정</h1>
+        <button class="header-logout-btn" id="header-logout-btn">로그아웃</button>
+    </div>
+
+    <div class="settings-content" id="settings-content">
+        <!-- JS에서 동적으로 렌더링 -->
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>설정을 불러오는 중...</p>
+        </div>
+    </div>
+
+    <script type="module" src="src/js/settings.js"></script>
+</body>
+</html>

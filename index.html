@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>학급 목록</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#3399ff">
+
+    <link rel="icon" href="oneclass_favicon.ico?v=5.08" type="image/x-icon">
+    <link rel="shortcut icon" href="oneclass_favicon.ico?v=5.08" type="image/x-icon">
+    <link rel="apple-touch-icon" href="icons/oneclass_192.png?v=5.08">
+
+    <link rel="stylesheet" href="src/css/main.css?v=5.08">
+    <link rel="stylesheet" href="src/css/index.css?v=5.08">
+    <link rel="stylesheet" href="src/css/contact-modal.css?v=5.08">
+    <link rel="stylesheet" href="src/css/settings-modal.css?v=5.08">
+
+    <script type="text/javascript">
+        (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "vqru6iwnq8");
+    </script>
+
+    <!-- [v4.77] 스플래시 화면 오늘 하루 안 보기 로직 (번쩍임 방지) -->
+    <script>
+        (function() {
+            const today = new Date().toDateString();
+            const splashShownDate = localStorage.getItem('splash_shown_date');
+            if (splashShownDate === today) {
+                // 이미 오늘 본 경우, DOM이 생성되기 전에 스타일을 미리 추가하여 감춤
+                document.write('<style>#splash-screen { display: none !important; opacity: 0; visibility: hidden; }</style>');
+            }
+        })();
+    </script>
+</head>
+
+<body>
+    <!-- 상단 버전 정보 -->
+    <div class="version-tag">v5.08</div>
+
+    <!-- 스플래시 화면 -->
+    <div id="splash-screen">
+        <div class="splash-content">
+            <img src="1clSplash.png" alt="OneClass Splash" id="splash-img">
+            <div class="splash-loader"></div>
+        </div>
+    </div>
+
+    <!-- 제목 및 검색 버튼 영역 -->
+    <div class="title-bar">
+        <div class="title-left">
+            <a id="calendar-link" href="calendar.html" class="calendar-link" title="학교 일정 캘린더 보기">
+                <div class="dynamic-calendar-icon">
+                    <div class="cal-date">--</div>
+                    <div class="cal-day">--</div>
+                </div>
+            </a>
+        </div>
+        <h1 class="school-name" data-school-name>학급 목록</h1>
+        <div class="nav-actions">
+            <!-- 햄버거 메뉴 -->
+            <div class="hamburger-menu">
+                <button id="hamburger-btn" class="hamburger-btn" aria-label="메뉴 열기">☰</button>
+                <div id="hamburger-dropdown" class="hamburger-dropdown">
+                    <!-- 기록 건수를 최상단으로 -->
+                    <button onclick="import('./src/js/api.js').then(m => m.logPageView(localStorage.getItem('teacher_email') || '', '기록 건수 메뉴 클릭', 'menu_click_total_records')); location.href='total-records.html'">
+                        기록 <strong id="record-count-val" class="loading-dots" style="color:#007aff;">...</strong>건
+                    </button>
+
+                    <button onclick="import('./src/js/api.js').then(m => m.logPageView(localStorage.getItem('teacher_email') || '', '기초조사 메뉴 클릭', 'menu_click_check_survey')); location.href='check-survey.html'">기초조사 제출 현황</button>
+                    <button onclick="import('./src/js/api.js').then(m => m.logPageView(localStorage.getItem('teacher_email') || '', '검색 메뉴 클릭', 'menu_click_search')); location.href='search.html'">학생 현황 및 검색</button>
+
+                    <div class="menu-divider"></div>
+
+                    <button id="menu-class-analysis" style="display: none;"
+                        onclick="location.href='class-analysis.html'">우리반 분석</button>
+                    <button onclick="import('./src/js/api.js').then(m => m.logPageView(localStorage.getItem('teacher_email') || '', '일괄기록 메뉴 클릭', 'menu_click_bulk_record')); location.href='bulk-record.html'">일괄기록</button>
+                    <button onclick="import('./src/js/api.js').then(m => m.logPageView(localStorage.getItem('teacher_email') || '', '인쇄 메뉴 클릭', 'menu_click_print_report')); location.href='print-report.html'">📊 통계 및 출력</button>
+                    <button onclick="import('./src/js/api.js').then(m => m.logPageView(localStorage.getItem('teacher_email') || '', '학생 분석 메뉴 클릭', 'menu_click_analysis')); location.href='analysis.html'">학생 분석</button>
+                    <button onclick="import('./src/js/api.js').then(m => m.logPageView(localStorage.getItem('teacher_email') || '', '위치 메뉴 클릭', 'menu_click_map_3d')); location.href='map-3d.html'">🏫 교실/실습실 위치</button>
+                    <button onclick="import('./src/js/api.js').then(m => m.logPageView(localStorage.getItem('teacher_email') || '', '퀴즈 메뉴 클릭', 'menu_click_quiz')); location.href='quiz.html'">인물 Quiz</button>
+                    <button onclick="location.href='index-2025.html'">2025학년도 명렬</button>
+                    <button id="menu-keeper" style="display: none; color: #ff9500; font-weight: bold;"
+                        onclick="import('./src/js/api.js').then(m => m.logPageView(localStorage.getItem('teacher_email') || '', '어드민 메뉴 클릭', 'menu_click_admin')); location.href='admin.html'">user log</button>
+                    <button id="logout-btn" style="color: #FF3B30;">로그아웃</button>
+                    <div class="menu-version">v5.08</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tooltip-anchor">
+        <!-- 롱프레스 안내 배너 -->
+        <div id="global-tip" class="floating-tooltip" style="display: none;" oncontextmenu="return false;">
+            <div class="tooltip-content">
+                <p class="tooltip-text">
+                    반 카드를 <span class="highlight">길게 꾹</span> 누르시면 교사 연락처가 표시됩니다 📱
+                </p>
+                <div class="tip-actions">
+                    <button id="close-global-tip" class="tip-close">확인</button>
+                    <label class="hide-tip-label">
+                        <input type="checkbox" id="hide-global-tip"> 그만 보기
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 학급 목록 -->
+    <div class="class-grid" id="class-list">불러오는 중...</div>
+
+
+
+    <!-- 선생님 연락처 팝업 -->
+    <div id="contact-modal" class="modal" style="display: none;">
+        <div class="modal-content contact-modal-content">
+            <h3 id="contact-modal-title" style="margin-top:0;">교사 연락처</h3>
+            <div id="contact-modal-body" class="contact-body">
+                <!-- 자바스크립트에서 동적으로 선생님 연락처 추가됨 -->
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn cancel-btn" id="close-contact-modal">닫기</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 이메일 인증 모달 (초기 접속 시) -->
+    <div id="auth-modal" class="modal"
+        style="display: none; z-index: 10000; align-items: center; justify-content: center; background: #f3f4f6;">
+        <div class="modal-content contact-modal-content"
+            style="padding: 24px; max-width: 380px; text-align: center; border-radius: 16px;">
+            <h3 style="margin-top: 0; color: #4A90E2; font-size: 1.5em; font-weight: 800;">선생님 인증</h3>
+            <p style="font-size: 1em; color: #444; margin-bottom: 24px;">
+                서비스를 이용하시려면<br /><strong style="color: #333;">학교에 제출하신 이메일</strong>을 입력해주세요.
+            </p>
+            <input type="email" id="auth-email-input" placeholder="example@school.com"
+                style="width: 100%; padding: 16px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 20px; font-size: 1.1em; font-weight: bold; text-align: center; box-sizing: border-box; outline: none; transition: border-color 0.2s;">
+            <button id="auth-submit-btn" class="bulk-submit-btn"
+                style="width: 100%; border-radius: 8px; padding: 20px; font-size: 1.1em; font-weight: bold; background-color: #4A90E2; color: #fff; border: none; cursor: pointer;">인증하기</button>
+            <p id="auth-error-msg"
+                style="color: #FF3B30; font-size: 0.9em; margin-top: 14px; display: none; font-weight: bold;"></p>
+            <div
+                style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #ddd; text-align: left; font-size: 0.85em; color: #555; line-height: 1.5;">
+                <p style="color: #FF3B30; font-weight: bold; margin: 0 0 8px 0;">⚠️ 주의: 소속 교사 외에는 인증하지 마십시오.</p>
+                <p style="margin: 0;" data-support-contact>이메일을 모르시거나 접속 문제가 있을 경우 학교 담당 선생님께 문의해 주세요.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- script type="module"이 중요함 -->
+    <script type="module" src="src/js/index.js?v=5.08"></script>
+</body>
+
+</html>

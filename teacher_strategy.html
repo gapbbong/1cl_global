@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>OneClass | 교사 전략 게시판</title>
+    <style>
+        body { font-family: 'Pretendard', sans-serif; background: #f4f7f6; color: #2c3e50; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        header { border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 20px; }
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+        .post-card { border: 1px solid #e0e0e0; padding: 15px; border-radius: 10px; margin-bottom: 15px; transition: 0.3s; }
+        .post-card:hover { background: #f9f9f9; border-color: #3498db; }
+        .tag { font-size: 12px; padding: 3px 8px; border-radius: 5px; color: white; }
+        .tag-critical { background: #e74c3c; } /* 심각 사안 */
+        .tag-discipline { background: #f39c12; } /* 훈육 사례 */
+        .tag-protection { background: #27ae60; } /* 교권 보호/민원대응 */
+        .btn-shield { background: #34495e; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; float: right; }
+    </style>
+
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vqru6iwnq8");
+</script>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🛡️ OneClass 지도 사례 공유 게시판</h1>
+        <p>선생님의 단단한 원칙이 아이들에게 울타리가 됩니다.</p>
+    </header>
+
+    <div class="filter-bar">
+        <button>전체 보기</button>
+        <button>심각 사안 🚨</button>
+        <button>민원 대응 🛡️</button>
+        <button>성장 임계점 사례 📈</button>
+    </div>
+
+    <div class="post-card">
+        <span class="tag tag-protection">민원대응</span>
+        <h3>[사례] 수업 중 반복적 지시 불이행 학생 데이터 대응법</h3>
+        <p>학생의 정서적 공감 대신 인지적 이해로 접근했습니다. 3주간의 '지시 불이행 로그'를 추출하여 학부모 상담 시 객관적 근거로 제시했습니다.</p>
+        <small>작성자: 3학년 5반 담임 | 조회 124 | 응원 12</small>
+        <button class="btn-shield">📄 민원 방어 데이터 팩 추출</button>
+    </div>
+
+    <div class="post-card">
+        <span class="tag tag-discipline">훈육 사례</span>
+        <h3>[전략] '과제의 분리'를 적용한 게임 중독 학생 상담</h3>
+        <p>"그건 네가 넘어야 할 산이지만, 선생님은 데이터를 기록하며 기다려주겠다"는 메시지를 전달했습니다. 스팀 API 연동 데이터가 큰 도움이 되었습니다.</p>
+        <small>작성자: 1학년 2반 담임 | 조회 89 | 응원 8</small>
+    </div>
+
+    <div class="post-card">
+        <span class="tag tag-critical">심각 사안</span>
+        <h3>[집단지성] 교사 인격 모독 언행에 대한 18개 반 공동 대응</h3>
+        <p>중앙집중식 관리 시스템을 통해 해당 학생의 전 반 교과 선생님들과 일관된 훈육 톤을 맞추기로 했습니다.</p>
+        <small>작성자: 생활지도부 | 조회 210 | 응원 25</small>
+        <button class="btn-shield">🤝 공동 지도 시나리오 합의</button>
+    </div>
+</div>
+
+</body>
+</html>

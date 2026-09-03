@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>인물 퀴즈</title>
+  <link rel="stylesheet" href="src/css/main.css">
+  <style>
+    :root {
+      --quiz-primary: #4A90E2;
+      --quiz-success: #34C759;
+      --quiz-error: #FF3B30;
+      --quiz-bg: #f8fafc;
+    }
+
+    body {
+      background-color: var(--quiz-bg);
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', sans-serif;
+    }
+
+    .quiz-container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      box-sizing: border-box;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .game-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin: 0;
+    }
+
+    /* Selection Screen */
+    .selection-screen {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .selection-guide {
+      text-align: center;
+      background: #eff6ff;
+      color: #1d4ed8;
+      padding: 12px;
+      border-radius: 12px;
+      margin: 0 0 10px 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: 1px solid #dbeafe;
+    }
+
+    .selection-group {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .selection-group h3 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 1rem;
+      color: #64748b;
+    }
+
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .option-btn {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px 2px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .option-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .option-btn.primary {
+      grid-column: span 2;
+      background: var(--quiz-primary);
+      color: #fff;
+      border: none;
+    }
+
+    /* Game Screen */
+    .game-screen {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .quiz-status {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: #64748b;
+      font-weight: bold;
+    }
+
+    .photo-card {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      background: #e2e8f0;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .correct-name-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--quiz-primary);
+      text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 0 4px 10px rgba(0, 0, 0, 0.3);
+      font-size: 3rem;
+      font-weight: 900;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Colored Buttons for Selection (Matched to Home Screen) */
+    .btn-g1 {
+      background: hsl(150, 60%, 78%);
+      color: #064e3b;
+      border-color: hsl(150, 60%, 65%);
+    }
+
+    .btn-g1:hover {
+      background: hsl(150, 60%, 85%);
+    }
+
+    .btn-g2 {
+      background: hsl(210, 60%, 78%);
+      color: #1e3a8a;
+      border-color: hsl(210, 60%, 65%);
+    }
+
+    .btn-g2:hover {
+      background: hsl(210, 60%, 85%);
+    }
+
+    .btn-g3 {
+      background: hsl(30, 60%, 78%);
+      color: #78350f;
+      border-color: hsl(30, 60%, 65%);
+    }
+
+    .btn-g3:hover {
+      background: hsl(30, 60%, 85%);
+    }
+
+    .correct-name-overlay.show {
+      opacity: 1;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .answer-btn {
+      background: #fff;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 18px 10px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #1e293b;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .answer-btn:active {
+      transform: scale(0.95);
+    }
+
+    .answer-btn.correct {
+      background: var(--quiz-success);
+      color: #fff;
+      border-color: var(--quiz-success);
+    }
+
+    .answer-btn.wrong {
+      background: var(--quiz-error);
+      color: #fff;
+      border-color: var(--quiz-error);
+    }
+
+    .exit-btn {
+      margin-top: 10px;
+      background: var(--quiz-primary);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 4px 6px -1px rgba(74, 144, 226, 0.3);
+    }
+
+    .exit-btn:hover {
+      background: #357abd;
+    }
+
+    .exit-btn:active {
+      transform: scale(0.98);
+    }
+
+    .my-stats-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+      padding: 15px 20px;
+      border-radius: 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .rank-toggle-btn {
+      background: #fff;
+      border: 2px solid var(--quiz-primary);
+      color: var(--quiz-primary);
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    /* Result Screen */
+    .result-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .score-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: var(--quiz-primary);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: 30px;
+      box-shadow: 0 10px 20px rgba(74, 144, 226, 0.3);
+    }
+
+    .score-val {
+      font-size: 3rem;
+      font-weight: 900;
+    }
+
+    .ranking-card {
+      width: 100%;
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      box-sizing: border-box;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .ranking-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      text-align: left;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    .ranking-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .ranking-item:last-child {
+      border-bottom: none;
+    }
+
+    .rank-info {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .rank-num {
+      font-weight: 800;
+      color: #64748b;
+      min-width: 24px;
+    }
+
+    .rank-id {
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .wrong-review-btn {
+      background: #fff;
+      color: var(--quiz-error);
+      border: 2px solid var(--quiz-error);
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* Review List */
+    #review-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .review-content {
+      background: #fff;
+      width: 100%;
+      max-width: 400px;
+      max-height: 80vh;
+      border-radius: 20px;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ranking-list {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .review-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .review-item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+  </style>
+
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vqru6iwnq8");
+</script>
+</head>
+
+<body>
+  <div class="quiz-container">
+    <div class="header">
+      <button class="back-btn" onclick="handleBack()">←</button>
+      <h1 class="game-title">인물 퀴즈</h1>
+      <div style="width: 24px;"></div> <!-- Spacer -->
+    </div>
+
+    <!-- Selection Screen -->
+    <div id="selection-screen" class="selection-screen">
+      <div class="my-stats-banner">
+        <div style="text-align: left;">
+          <div style="font-size: 0.8rem; color: #64748b;">내 누적 점수</div>
+          <div id="my-total-score" style="font-size: 1.4rem; font-weight: 900; color: var(--quiz-primary);">0</div>
+        </div>
+        <button class="rank-toggle-btn" onclick="showRankingModal()">🏆 랭킹 보기</button>
+      </div>
+      <div class="selection-group">
+        <h3 style="margin-bottom: 20px;">학년 및 학과별</h3>
+        <div class="btn-grid" style="grid-template-columns: repeat(3, 1fr); gap: 10px;">
+          <!-- Col 0: 전체 -->
+          <button class="option-btn primary" onclick="startQuiz('all')"
+            style="grid-column: span 3; margin-bottom: 10px;">전교생</button>
+
+          <!-- Col 1 -->
+          <button class="option-btn btn-g1" onclick="startQuiz('grade1')">1학년 전체</button>
+          <button class="option-btn btn-g2" onclick="startQuiz('grade2')">2학년 전체</button>
+          <button class="option-btn btn-g3" onclick="startQuiz('grade3')">3학년 전체</button>
+
+          <button class="option-btn btn-g1" onclick="startQuiz('dept1-iot')">1학년 IoT전기</button>
+          <button class="option-btn btn-g2" onclick="startQuiz('dept2-iot')">2학년 IoT전기</button>
+          <button class="option-btn btn-g3" onclick="startQuiz('dept3-iot')">3학년 IoT전기</button>
+
+          <button class="option-btn btn-g1" onclick="startQuiz('dept1-game')">1학년 게임콘텐츠</button>
+          <button class="option-btn btn-g2" onclick="startQuiz('dept2-game')">2학년 게임콘텐츠</button>
+          <button class="option-btn btn-g3" onclick="startQuiz('dept3-game')">3학년 게임콘텐츠</button>
+        </div>
+      </div>
+
+      <div class="selection-group">
+        <h3>반별 선택</h3>
+        <div id="class-grid" class="btn-grid">
+          <!-- JS에서 생성 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="game-screen">
+      <div class="quiz-status">
+        <span id="quiz-progress">1 / 10</span>
+        <span id="quiz-score">Score: 0</span>
+      </div>
+
+      <div class="photo-card">
+        <img id="quiz-photo" src="" alt="Student">
+        <div id="name-overlay" class="correct-name-overlay"></div>
+      </div>
+
+      <div id="answer-grid" class="answer-grid">
+        <button class="answer-btn" onclick="checkAnswer(0)">옵션 1</button>
+        <button class="answer-btn" onclick="checkAnswer(1)">옵션 2</button>
+        <button class="answer-btn" onclick="checkAnswer(2)">옵션 3</button>
+        <button class="answer-btn" onclick="checkAnswer(3)">옵션 4</button>
+      </div>
+      <button class="exit-btn" onclick="handleBack()">저장하고 종료</button>
+    </div>
+  </div>
+
+  <!-- Result Screen -->
+  <div id="result-screen" class="result-screen">
+    <div class="score-circle">
+      <span>내 점수</span>
+      <div class="score-val" id="final-score">0</div>
+    </div>
+
+    <button class="wrong-review-btn" id="btn-review">틀린 학생 다시보기</button>
+
+    <div class="ranking-card">
+      <h3 style="margin-top: 0;">🏆 선생님 랭킹</h3>
+      <div id="ranking-list-result" class="ranking-list">
+        <!-- JS에서 생성 -->
+      </div>
+    </div>
+
+    <button class="option-btn primary" onclick="location.reload()">다시 하기</button>
+  </div>
+  </div>
+
+  <!-- Review Modal -->
+  <div id="review-modal">
+    <div id="review-container">
+      <div class="review-content">
+        <h3 style="margin-top: 0; display: flex; justify-content: space-between;">
+          틀린 학생 목록
+          <button onclick="document.getElementById('review-container').style.display='none'"
+            style="border:none; background:none; font-size:1.2rem; cursor:pointer;">×</button>
+        </h3>
+        <div id="review-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ranking Modal -->
+  <div id="ranking-modal"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
+    <div class="review-content">
+      <h3 style="margin-top: 0; display: flex; justify-content: space-between; align-items: center;">
+        🏆 선생님 랭킹
+        <button onclick="document.getElementById('ranking-modal').style.display='none'"
+          style="border:none; background:none; font-size:1.5rem; cursor:pointer;">×</button>
+      </h3>
+      <div id="ranking-list-modal" class="ranking-list">
+        <!-- JS에서 생성 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Score Guide Modal -->
+  <div id="score-guide-modal"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 300; display: none; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(3px);">
+    <div
+      style="background: white; border-radius: 16px; padding: 24px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative;">
+      <h3 style="margin-top: 0; color: var(--quiz-primary); display: flex; align-items: center; gap: 8px;">
+        💡 인물 퀴즈 안내
+      </h3>
+      <p style="color: #334155; line-height: 1.6; margin-bottom: 20px;">
+        <span style="font-size: 1.05rem; font-weight: bold; color: var(--quiz-primary);">"내가 그의 이름을 불러주었을 때,<br>그는 나에게로
+          와서 꽃이 되었다."</span><br>
+        <span style="font-size: 0.9rem; color: #64748b; margin-top: 5px; display: inline-block;">- 김춘수,
+          「꽃」</span><br><br>
+        학생들의 아름다운 이름을 외우러 오신 선생님, 진심으로 환영하고 응원합니다! 😊<br><br>
+        <strong>인물 출제 범위를 선택하시면 바로 퀴즈가 시작됩니다.</strong><br>
+        정답을 맞힐 때마다 <strong>해당 출제 범위의 총 인원수</strong>만큼 점수가 올라가니 재미있게 도전해 보세요!<br>
+        <span
+          style="font-size: 0.9rem; color: #64748b; background: #f8fafc; padding: 10px; display: block; border-radius: 8px; margin-top: 5px;">
+          (예: 50명 범위면 1문제당 50점 획득)
+        </span>
+      </p>
+
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <label
+          style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: #64748b; cursor: pointer;">
+          <input type="checkbox" id="hide-guide-checkbox" style="width: 16px; height: 16px; cursor: pointer;">
+          다시 보지 않기
+        </label>
+        <button onclick="closeScoreGuide()"
+          style="background: var(--quiz-primary); color: white; border: none; padding: 8px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;">
+          확인
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Alert Modal -->
+  <div id="custom-alert-modal"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 400; display: none; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(2px);">
+    <div
+      style="background: white; border-radius: 16px; padding: 24px; width: 100%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center;">
+      <h3 style="margin-top: 0; color: var(--quiz-error); margin-bottom: 15px;">⚠️ 알림</h3>
+      <p id="custom-alert-message" style="color: #334155; line-height: 1.5; margin-bottom: 24px; word-break: keep-all;">
+      </p>
+      <button onclick="closeCustomAlert()"
+        style="background: var(--quiz-primary); color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%;">확인</button>
+    </div>
+  </div>
+
+  <!-- Custom Confirm Modal -->
+  <div id="custom-confirm-modal"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 400; display: none; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(2px);">
+    <div
+      style="background: white; border-radius: 16px; padding: 24px; width: 100%; max-width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center;">
+      <h3 style="margin-top: 0; color: #1e293b; margin-bottom: 15px;">💾 저장하고 종료하시겠습니까?</h3>
+      <p id="custom-confirm-message"
+        style="color: #64748b; line-height: 1.5; margin-bottom: 24px; font-size: 0.95rem; word-break: keep-all;">지금까지의
+        진행 상황이 저장되며 메인 화면으로 이동합니다.</p>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button onclick="closeCustomConfirm(false)"
+          style="background: #e2e8f0; color: #475569; border: none; padding: 12px 24px; border-radius: 10px; font-weight: bold; cursor: pointer; flex: 1;">취소</button>
+        <button onclick="closeCustomConfirm(true)"
+          style="background: var(--quiz-primary); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: bold; cursor: pointer; flex: 1; box-shadow: 0 4px 6px -1px rgba(74, 144, 226, 0.3);">저장하고
+          종료</button>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script type="module" src="src/js/quiz.js"></script>
+</body>
+
+</html>

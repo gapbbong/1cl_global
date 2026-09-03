@@ -1,0 +1,209 @@
+/* 연락처 모달 및 롱프레스 특화 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.contact-modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 320px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.contact-modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.25em;
+    color: #333;
+}
+
+.contact-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.teacher-contact-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #f0f4f8;
+    border-radius: 8px;
+    font-weight: bold;
+    color: #333;
+}
+
+.teacher-contact-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.teacher-contact-actions a {
+    text-decoration: none;
+    font-size: 1.4em;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.teacher-contact-actions a:hover {
+    transform: scale(1.1);
+}
+
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cancel-btn {
+    padding: 12px 0;
+    width: 100%;
+    background: #4A90E2;
+    /* 투박한 회색에서 브랜드 컬러로 변경 */
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.cancel-btn:hover {
+    background: #ccc;
+}
+
+/* 롱프레스 시 반응 효과 */
+.class-box.pressing {
+    transform: scale(0.95);
+    opacity: 0.8;
+}
+
+/* 플로팅 툴팁 (첫 화면 말풍선 안내) */
+/* 플로팅 툴팁 (상단 고정형 배너) - "검정배경" 확정 */
+/* 플로팅 툴팁 (상단 고정형 배너) - "검정배경" 확정 및 우선순위 강화 */
+.floating-tooltip {
+    display: none;
+    /* JS에서 block/flex로 변경 */
+    width: 95%;
+    max-width: 550px;
+    margin: 0 auto 15px auto !important;
+    background: #000000 !important;
+    /* 순수 블랙 강제 적용 */
+    color: #ffffff !important;
+    padding: 14px 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+    z-index: 9999 !important;
+    box-sizing: border-box;
+    animation: slideInDown 0.4s ease-out;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.tooltip-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+    /* 모바일 대응 */
+}
+
+.tooltip-text {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.4;
+    flex: 1;
+    min-width: 200px;
+}
+
+.tooltip-text .highlight {
+    color: #ffcc00;
+    /* 더 선명한 노란색 */
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.tip-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tip-close {
+    background: #007aff;
+    /* iOS 스타일 블루 */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+}
+
+.tip-close:active {
+    transform: scale(0.96);
+    background: #0056b3;
+}
+
+.hide-tip-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #a1a1a6;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.hide-tip-label input {
+    margin: 0;
+    cursor: pointer;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 롱프레스 시 텍스트 선택 방지 */
+.class-box {
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    user-select: none;
+}

@@ -1,0 +1,135 @@
+/* room-search.css */
+body {
+    background: #f8fafc;
+    padding: 20px;
+    font-family: 'Pretendard', sans-serif;
+    color: #1e293b;
+}
+
+.search-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    min-height: 50px;
+}
+
+.search-header h1 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+.back-btn {
+    position: absolute;
+    left: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    background: #f1f5f9;
+    transform: translateY(-1px);
+}
+
+.search-bar-container {
+    background: white;
+    padding: 18px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    position: sticky;
+    top: 20px;
+    z-index: 10;
+}
+
+.search-input {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    box-sizing: border-box;
+    transition: all 0.2s;
+    outline: none;
+    background: #f8fafc;
+}
+
+.search-input:focus {
+    border-color: #3b82f6;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.list-container {
+    padding-bottom: 40px;
+}
+
+.floor-group {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.floor-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #3b82f6;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.room-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f8fafc;
+}
+
+.room-item:last-child {
+    border-bottom: none;
+}
+
+.room-badge {
+    background: #eff6ff;
+    color: #1d4ed8;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    margin-right: 12px;
+    min-width: 50px;
+    text-align: center;
+}
+
+.room-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 1.1rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.1);
+}

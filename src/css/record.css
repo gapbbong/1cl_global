@@ -1,0 +1,556 @@
+/* record.html 전용 스타일 */
+
+/* 상단 헤더 */
+/* 상단 여백 추가를 위해 body에 padding-top 추가 혹은 header-row에 margin-top 추가 */
+/* 여기서는 공통 body padding과 별개로 record 페이지 특화 여백 추가 */
+
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    /* 최상단 여백 추가 */
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eee;
+    width: 100%;
+    /* 너비 꽉 채우기 */
+    box-sizing: border-box;
+    /* 패딩 포함 */
+}
+
+.header-row h2 {
+    margin: 0;
+    font-size: 28px;
+    text-align: center;
+    flex-grow: 1;
+    /* 가운데 공간 차지 */
+    /* 양쪽 버튼과 겹치지 않게 최소 여백 */
+    padding: 0 10px;
+}
+
+/* 버튼 스타일 */
+.btn {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.btn-back {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    background-color: white;
+    color: #555;
+    border: 1px solid #e0e0e0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.btn-back:hover {
+    background-color: #f8f9fa;
+    color: #1a73e8;
+    border-color: #1a73e8;
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(26, 115, 232, 0.15);
+}
+
+.btn-back::before {
+    content: "←";
+    font-size: 20px;
+    font-weight: normal;
+}
+
+.btn-save {
+    background-color: #3399ff;
+    color: white;
+}
+
+.btn-save:disabled {
+    background-color: #ccc;
+}
+
+/* 폼 영역 */
+form {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 15px;
+    color: #333;
+    text-align: left !important;
+}
+
+.label-row-with-btn {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 25px;
+    margin-bottom: 5px;
+}
+
+.label-row-with-btn label {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.left-align-label {
+    text-align: left !important;
+}
+
+.vflat-notice .sub-text {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 2px;
+    display: block;
+}
+
+select,
+input,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+/* 잘한 일 / 못한 일 수평 배치 */
+.behavior-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.behavior-group-good {
+    width: 40%;
+}
+
+.behavior-group-bad {
+    width: 57%;
+}
+
+/* 자세히 필드 */
+textarea#detail {
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    /* 폰트 일관성 추가 */
+    font-weight: bold;
+    font-size: 15px;
+    min-height: 100px;
+    resize: none;
+    transition: height 0.1s ease;
+}
+
+/* 기록 내역 영역 */
+.record-log {
+    margin-top: 30px;
+    padding: 20px 15px 0 15px;
+}
+
+.record-log h3 {
+    border-bottom: 2px solid #3399ff;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+/* 로딩 애니메이션 추가 */
+.loading-records {
+    text-align: center;
+    padding: 20px;
+    font-size: 16px;
+    color: #666;
+    font-weight: bold;
+}
+
+.loading-records::after {
+    content: "기록을 불러오는 중입니다";
+    animation: loadingDots 1.5s infinite steps(1, end);
+}
+
+@keyframes loadingDots {
+    0% {
+        content: "기록을 불러오는 중입니다";
+    }
+
+    25% {
+        content: "기록을 불러오는 중입니다.";
+    }
+
+    50% {
+        content: "기록을 불러오는 중입니다..";
+    }
+
+    75% {
+        content: "기록을 불러오는 중입니다...";
+    }
+
+    100% {
+        content: "기록을 불러오는 중입니다...";
+    }
+}
+
+.log-item {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    position: relative;
+    text-align: left;
+    /* 왼쪽 정렬 강제 */
+}
+
+/* 삭제 버튼 스타일 추가 */
+.btn-delete {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: #fff;
+    border: 1px solid #ff4d4d;
+    color: #ff4d4d;
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-delete:hover {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+/* [추가] 반성문 사진 스타일 */
+.record-photo-thumb:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+    transition: all 0.2s;
+}
+
+.photo-attachment-section {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px dashed #ddd;
+}
+
+.photo-preview-container img {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+    border-radius: 8px;
+}
+
+/* 로딩 애니메이션 (점 세개) */
+.loading-dots {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.loading-dots::after {
+    content: " .";
+    display: inline-block;
+    width: 1em;
+    text-align: left;
+    animation: dots 1.5s steps(1, end) infinite;
+}
+
+@keyframes dots {
+
+    0%,
+    100% {
+        content: " .";
+    }
+
+    33% {
+        content: " ..";
+    }
+
+    66% {
+        content: " ...";
+    }
+}
+
+/* 기초조사 보기 버튼 스타일 */
+.btn-survey-view {
+    background: #f0f7ff !important;
+    color: #0f52ba !important;
+    border: 1px solid #cce4f7 !important;
+    padding: 6px 14px !important;
+    border-radius: 20px !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    box-shadow: 0 4px 10px rgba(15, 82, 186, 0.15) !important;
+}
+
+.btn-survey-view:hover {
+    background: #e1effe !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 16px rgba(15, 82, 186, 0.2) !important;
+}
+
+.btn-survey-view:active {
+    transform: translateY(0) !important;
+}
+
+/* 팝업 레이아웃 보정 (record용) */
+.student-detail-popup {
+    max-height: 100vh !important;
+    width: 100vw !important;
+    max-width: none !important;
+    height: 100vh !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    z-index: 5000 !important;
+    padding: 0 !important;
+    /* 패딩 완전 제거 */
+}
+
+.popup-quadrants-container {
+    padding: 0 !important;
+    /* 내부 패딩 제거 */
+    gap: 2px !important;
+    /* 사분면 사이 아주 미세한 간격만 유지 */
+    flex: 1 !important;
+}
+
+.popup-quadrant {
+    border-radius: 0 !important;
+    /* 사각 모서리로 꽉 채움 */
+    border: none !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+/* 1,3사분면 왼쪽 / 2,4사분면 오른쪽 밀착 */
+.quad-1,
+.quad-3 {
+    border-right: 1px solid #f1f5f9 !important;
+}
+
+#overlay {
+    z-index: 4999 !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+
+.close-btn {
+    padding: 10px !important;
+    line-height: 1 !important;
+    font-size: 1.5rem !important;
+    cursor: pointer !important;
+    z-index: 5200 !important;
+}
+
+/* 학생 이동 플로팅 버튼 */
+.nav-floating-btn {
+    position: fixed !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 45px !important;
+    height: 45px !important;
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(5px) !important;
+    border: 1px solid #ddd !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.5rem !important;
+    color: #3399ff !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+    z-index: 5100 !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+}
+
+.nav-prev-btn {
+    left: 10px !important;
+}
+
+.nav-next-btn {
+    right: 10px !important;
+}
+
+.nav-floating-btn:active {
+    transform: translateY(-50%) scale(0.9) !important;
+    background: #fff !important;
+}
+
+/* vFlat 안내 문구 스타일 */
+.vflat-notice {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 4px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    background: #f8fafc;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px dashed #cbd5e1;
+    display: block;
+    text-align: center;
+}
+
+/* 사진 첨부 3단 액션 그리드 */
+.photo-action-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.photo-action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 4px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    -webkit-tap-highlight-color: transparent;
+    min-height: 80px;
+    height: 80px;
+    box-sizing: border-box;
+    /* 패딩 오차 방지 */
+    margin: 0;
+}
+
+.photo-action-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    background: #f8fafc;
+}
+
+.photo-action-item:active {
+    transform: scale(0.96);
+    background: #f1f5f9;
+}
+
+.action-icon-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.action-label {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+/* [v4.23] 칩(태그) 스타일 */
+.chip-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.chip {
+    padding: 10px 16px;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.chip:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
+/* 잘한 일 액티브 (블루 계열) */
+.chip.good.active {
+    background: #1a73e8;
+    color: white;
+    border-color: #1a73e8;
+    box-shadow: 0 4px 10px rgba(26, 115, 232, 0.25);
+}
+
+/* 못한 일 보이스 (레드 계열) */
+.chip.bad.active {
+    background: #ff4d4f;
+    color: white;
+    border-color: #f5222d;
+    box-shadow: 0 4px 10px rgba(255, 77, 79, 0.25);
+}
+
+.chip.active {
+    transform: scale(0.95);
+}
+
+/* 모바일 대응: 칩 컨테이너 너비 보정 */
+@media (max-width: 500px) {
+    .behavior-row {
+        flex-direction: column;
+    }
+    .behavior-group-good, .behavior-group-bad {
+        width: 100%;
+    }
+}
+
+.file-name-display {
+    font-size: 0.8rem;
+    color: #64748b;
+    background: #f8fafc;
+    padding: 6px 15px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 10px;
+    word-break: break-all;
+}
+
+.vflat-notice span {
+    color: #3b82f6;
+    font-weight: 800;
+    text-decoration: underline;
+}
+
+.vflat-notice:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}

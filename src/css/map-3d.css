@@ -1,0 +1,183 @@
+#map-container {
+    position: fixed;
+    top: 60px; /* header height */
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - 60px);
+    background: radial-gradient(circle at center, #cbd5e1 0%, #94a3b8 100%);
+    overflow: hidden;
+}
+
+#map-controls {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 10;
+}
+
+.floor-selector {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.floor-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    color: #cbd5e1;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floor-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.floor-btn.active {
+    background: #3b82f6;
+    color: white;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
+
+.view-controls {
+    display: flex;
+    justify-content: center;
+}
+
+#reset-view {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#room-info-panel {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    width: 280px;
+    padding: 20px;
+    z-index: 10;
+}
+
+.glass-panel {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    color: white;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+#room-title {
+    margin: 0 0 10px 0;
+    font-size: 1.4rem;
+    color: #60a5fa;
+}
+
+#room-desc {
+    margin: 0 0 20px 0;
+    color: #94a3b8;
+    line-height: 1.5;
+}
+
+#close-panel {
+    width: 100%;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+}
+
+#instructions {
+    position: absolute;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    pointer-events: none;
+}
+
+/* CSS2D Label Styles */
+.room-label {
+    padding: 6px 12px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(96, 165, 250, 0.6);
+    border-radius: 6px;
+    color: #60a5fa;
+    text-align: center;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.room-no {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.room-fn {
+    font-size: 10px;
+    font-weight: 500;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+.room-label:hover {
+    background: #3b82f6;
+    border-color: #93c5fd;
+    transform: scale(1.15) translateY(-5px);
+    z-index: 100;
+}
+
+.room-label:hover .room-fn {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.room-label.active {
+    background: #f59e0b;
+    border-color: #fbbf24;
+    color: white;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+}
+
+.room-label.active .room-fn {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.list-view-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin-right: 15px;
+}

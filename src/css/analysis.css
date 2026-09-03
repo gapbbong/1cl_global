@@ -1,0 +1,621 @@
+/* analysis.css - Omni-Perspective AI Dashboard Styles */
+
+:root {
+    --ai-primary: #4A90E2;
+    --ai-accent: #6C5CE7;
+    --ai-bg: #F4F7FB;
+    --ai-card-bg: #FFFFFF;
+    --ai-text: #2D3436;
+    --ai-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    --ai-border: #E2E8F0;
+}
+
+body {
+    background-color: var(--ai-bg);
+    margin: 0;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    color: var(--ai-text);
+}
+
+.analysis-dashboard {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px 15px;
+    min-height: 100vh;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 0 10px;
+}
+
+.back-btn {
+    background: white;
+    border: 1px solid var(--ai-border);
+    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--ai-text);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    background: #f8fafc;
+    transform: translateY(-2px);
+}
+
+.dashboard-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(135deg, var(--ai-primary), var(--ai-accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Unified Control Panel */
+.control-panel {
+    background: var(--ai-card-bg);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--ai-shadow);
+    margin-bottom: 24px;
+}
+
+/* 1. Mode Toggle */
+.analysis-mode-toggle {
+    display: flex;
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 20px;
+}
+
+.mode-radio {
+    flex: 1;
+    text-align: center;
+    cursor: pointer;
+}
+
+.mode-radio input {
+    display: none;
+}
+
+.mode-radio span {
+    display: block;
+    padding: 10px 0;
+    border-radius: 10px;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+}
+
+.mode-radio input:checked+span {
+    background: white;
+    color: var(--ai-primary);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* 2. Target Selection */
+.target-selection-area {
+    margin-bottom: 20px;
+}
+
+.search-container {
+    display: flex;
+    gap: 12px;
+    position: relative;
+}
+
+.dual-search {
+    flex-wrap: wrap !important;
+    /* 버튼과 인풋 분리 */
+    align-items: stretch;
+    gap: 8px;
+    /* 입력창 사이 간격 */
+}
+
+.id-input,
+.name-input {
+    border: 1px solid var(--ai-border);
+    border-radius: 12px;
+    font-size: 1rem;
+    background: #f8fafc;
+    box-sizing: border-box;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.id-input {
+    flex: 4 !important;
+    min-width: 0;
+    /* 내용물에 의한 확장 방지 */
+    padding: 14px 8px !important;
+}
+
+.name-input {
+    flex: 4;
+    min-width: 0;
+}
+
+#search-apply-btn {
+    flex: 2 !important;
+    min-width: 60px;
+    /* 조회 버튼 최소 너비 확보 */
+    border-radius: 12px;
+    padding: 0 !important;
+    font-size: 0.9rem;
+}
+
+.search-input:focus {
+    background: white;
+    border-color: var(--ai-primary);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.styled-select {
+    flex: 1;
+    padding: 14px 16px;
+    border: 1px solid var(--ai-border);
+    border-radius: 12px;
+    font-size: 1rem;
+    background: #f8fafc;
+    outline: none;
+    color: var(--ai-text);
+    cursor: pointer;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 10L12 15L17 10" stroke="%2394a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.action-btn {
+    padding: 0 24px;
+    background: linear-gradient(135deg, var(--ai-primary), var(--ai-accent));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.action-btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+    color: #94a3b8;
+}
+
+.action-btn:not(:disabled):hover {
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+}
+
+.search-results-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--ai-border);
+    border-radius: 12px;
+    box-shadow: var(--ai-shadow);
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.search-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.search-item:last-child {
+    border-bottom: none;
+}
+
+.search-item:hover {
+    background: #f8fafc;
+}
+
+/* 3. Lens Selection */
+.lens-selection-area {
+    border-top: 1px dashed var(--ai-border);
+    padding-top: 20px;
+}
+
+.lens-select {
+    width: 100%;
+    background-color: white;
+    font-weight: 700;
+    color: var(--ai-primary);
+    border: 2px solid var(--ai-border);
+}
+
+.lens-select:focus {
+    border-color: var(--ai-primary);
+}
+
+/* Empty State & Loading */
+.empty-state,
+.loading-container {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--ai-card-bg);
+    border-radius: 24px;
+    box-shadow: var(--ai-shadow);
+}
+
+.empty-icon {
+    font-size: 5rem;
+    margin-bottom: 20px;
+}
+
+.ai-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--ai-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Result Cards */
+.student-header-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    background: linear-gradient(135deg, var(--ai-primary), var(--ai-accent));
+    color: white;
+    padding: 24px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(108, 92, 231, 0.2);
+}
+
+.student-photo-mini {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+.student-meta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.student-meta h2 {
+    margin: 0 0 4px 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.student-meta p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 0.95rem;
+}
+
+.ai-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    backdrop-filter: blur(4px);
+    white-space: nowrap;
+    position: absolute;
+    top: 24px;
+    right: 24px;
+}
+
+@media screen and (max-width: 480px) {
+    .student-header-card {
+        padding: 16px;
+        gap: 12px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .student-photo-mini {
+        width: 80px;
+        height: 80px;
+    }
+
+    .student-meta h2 {
+        font-size: 1.25rem;
+    }
+}
+
+/* Analysis Content Areas */
+.lens-content-area {
+    background: white;
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: var(--ai-shadow);
+    min-height: 400px;
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Incremental Loading Styles */
+.loading-section {
+    position: relative;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.mini-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--ai-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 20px auto;
+}
+
+.status-text {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-top: 8px;
+    font-weight: 500;
+}
+
+.result-card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--ai-shadow);
+    border: 1px solid #f1f5f9;
+}
+
+.analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 600px) {
+    .analysis-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* owner-batch-panel Styles */
+.owner-batch-panel {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 2px dashed var(--ai-border);
+}
+
+.owner-batch-panel .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.owner-batch-panel h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--ai-text);
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.status-badge.running {
+    background: #ecfdf5;
+    color: #10b981;
+    animation: batchPulse 2s infinite;
+}
+
+@keyframes batchPulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.batch-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.batch-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.batch-btn.start {
+    background: #10b981;
+    color: white;
+}
+
+.batch-btn.start:hover {
+    background: #059669;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.batch-btn.stop {
+    background: #ef4444;
+    color: white;
+}
+
+.batch-btn.stop:disabled {
+    background: #f1f5f9;
+    color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+.batch-progress-container {
+    background: #f8fafc;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid var(--ai-border);
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ai-text);
+}
+
+.progress-bar-bg {
+    height: 10px;
+    background: #e2e8f0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #34d399);
+    width: 0%;
+    transition: width 0.4s ease;
+}
+
+.current-target {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin: 0;
+    text-align: center;
+}
+
+/* 플로팅 컨트롤 (학생 내비게이션) - stu-list.css 스타일 계승 */
+.floating-controls {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 120px;
+    /* 분석화면 배치를 고려하여 간격 확대 */
+    z-index: 1001;
+    background: none !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    pointer-events: none;
+}
+
+.floating-controls button {
+    pointer-events: auto;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    border: 1px solid #e2e8f0 !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.25s ease !important;
+}
+
+.floating-controls button svg {
+    width: 28px !important;
+    height: 28px !important;
+    fill: #4A90E2 !important;
+}
+
+.floating-controls button:hover {
+    background-color: #4A90E2 !important;
+    transform: scale(1.15) !important;
+}
+
+.floating-controls button:hover svg {
+    fill: #fff !important;
+}
+
+.floating-controls button:active {
+    transform: scale(0.95) !important;
+}
+
+@media screen and (max-width: 480px) {
+    .floating-controls {
+        gap: 100px;
+        bottom: 20px;
+    }
+}

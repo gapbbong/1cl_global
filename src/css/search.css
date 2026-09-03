@@ -1,0 +1,360 @@
+/* search.html 전용 스타일 */
+
+#home-btn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1100;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+    text-decoration: none;
+}
+
+#home-btn:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+#home-btn:active {
+    transform: scale(0.95);
+}
+
+body {
+    text-align: center;
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+h4 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 24px;
+    margin-bottom: 12px;
+}
+
+/* 검색 폼 */
+.search-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    /* 컨테이너 간격 축소 */
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: nowrap;
+    width: 90% !important;
+    /* 좌우 여백 확실히 확보 */
+    max-width: 900px;
+    margin: 15px auto 5px auto !important;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.search-form select {
+    flex: 3 !important;
+    /* 비율 강제 */
+    width: 0 !important;
+    padding: 5px;
+    font-size: 18px !important;
+    /* 사용자 요청에 따라 크기 축소 */
+    font-weight: 800;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    height: 58px !important;
+    /* 높이도 조절 */
+    /* 70px에서 약 10% 줄임 */
+    background-color: #fff;
+    cursor: pointer;
+    text-align: center;
+}
+
+.search-form input[type="text"] {
+    flex: 5 !important;
+    /* 비율 강제 */
+    width: 0 !important;
+    padding: 0 16px;
+    font-size: 18px !important;
+    /* 왼쪽 셀렉트와 동일한 크기 */
+    font-weight: 800;
+    border: 2px solid #000;
+    /* 더 강조된 테두리 */
+    border-radius: 12px;
+    height: 58px !important;
+    box-sizing: border-box;
+    outline: none;
+    line-height: normal;
+    color: #000;
+    /* 글자색을 진하게 */
+}
+
+.search-form input[type="text"]::placeholder {
+    color: #000;
+    /* 진하게 (본문과 동일하게) */
+    font-size: 18px;
+    /* 본문과 동일하게 */
+    font-weight: 800;
+    opacity: 0.8;
+    /* 약간의 투명도만 부여 */
+}
+
+.search-form button {
+    flex: 2 !important;
+    /* 비율 강제 */
+    width: 0 !important;
+    padding: 0 5px;
+    font-size: 18px !important;
+    /* 통일된 크기 */
+    background-color: #3399ff;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 900;
+    height: 58px !important;
+    white-space: nowrap;
+}
+
+/* 결과 영역 */
+#result-count {
+    margin-top: 5px !important;
+    /* 여백 절반 축소 */
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+}
+
+#results {
+    margin-top: 10px !important;
+    /* 여백 절반 축소 */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.result-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    background: #f9f9f9;
+    text-align: left;
+}
+
+.result-item img {
+    width: 145px;
+    /* 132px * 1.1 = 약 145px */
+    height: 182px;
+    /* 165px * 1.1 = 약 182px */
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #aaa;
+}
+
+.info-box {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.4;
+    /* 글자 간격 조정 */
+}
+
+/* 전화 걸기/문자 아이콘 영역 */
+.phone-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0 0 0;
+    font-size: 15px;
+}
+
+.phone-actions a {
+    margin: 0 3px;
+    text-decoration: none;
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* 로딩 스피너 */
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* 통계 테이블 (공통) */
+#summary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 2px !important;
+    /* 여백 대폭 축소 */
+}
+
+#summaryTable,
+.summary-table {
+    width: auto;
+    /* 너비 자동 (콘텐츠에 맞춤) */
+    min-width: 320px;
+    max-width: 95%;
+    /* 너무 넓어지지 않게 */
+    margin: 10px auto 30px !important;
+    /* 마진 축소 */
+    border-collapse: collapse;
+    font-size: 21px;
+    /* 14px * 1.5 = 21px */
+}
+
+#summaryTable th,
+#summaryTable td,
+.summary-table th,
+.summary-table td {
+    border: 1px solid #ccc;
+    padding: 10px 12px;
+    /* 폰트 크기에 맞춰 패딩 조정 */
+    text-align: center;
+    white-space: nowrap;
+    font-size: 21px;
+}
+
+.summary-table th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+    border-bottom: 3px solid #000;
+    /* 헤더 강조 */
+}
+
+#summaryTable th {
+    background: #f0f4ff;
+    /* 기존 색상 유지 또는 통일? 일단 기존 유지 */
+}
+
+.summary-table .subtotal {
+    background-color: #fffacd;
+    /* 연한 노랑 */
+    font-weight: bold;
+}
+
+.summary-table .grandtotal {
+    background-color: #e0ffe0;
+    /* 연한 초록 */
+    font-weight: bold;
+}
+
+/* 학년별 구분선 (6반 끝날 때마다) */
+.summary-table tr:nth-child(7),
+.summary-table tr:nth-child(13),
+.summary-table tr:nth-child(19) {
+    border-bottom: 3px solid #000;
+}
+
+/* 모바일 반응형 최적화 */
+@media (max-width: 600px) {
+    h2 {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    .search-form {
+        flex-wrap: nowrap !important;
+        /* 모바일에서도 한 줄 유지 */
+        gap: 8px;
+        width: 95% !important;
+        /* 모바일에서도 최소한의 여백 확보 */
+        padding: 0;
+    }
+
+    .search-form select {
+        flex: 3 !important;
+        font-size: 16px !important;
+        height: 54px !important;
+    }
+
+    .search-form input[type="text"] {
+        flex: 5 !important;
+        font-size: 20px !important;
+        height: 54px !important;
+    }
+
+    .search-form button {
+        flex: 2 !important;
+        font-size: 16px !important;
+        height: 54px !important;
+    }
+
+    .result-item {
+        width: 95%;
+        padding: 8px;
+        gap: 8px;
+    }
+
+    .result-item img {
+        width: 97px;
+        /* 88px * 1.1 = 약 97px */
+        height: 121px;
+        /* 110px * 1.1 = 약 121px */
+    }
+
+    .info-box {
+        font-size: 13px;
+    }
+
+    /* 테이블 모바일 최적화 */
+    #summaryTable,
+    .summary-table {
+        font-size: 17px;
+        margin: 10px auto 20px;
+        white-space: nowrap;
+    }
+
+    #summary {
+        overflow-x: auto;
+        /* 컨테이너에서 스크롤 처리 */
+        width: 100%;
+        padding-bottom: 20px;
+    }
+
+    #summaryTable th,
+    #summaryTable td,
+    .summary-table th,
+    .summary-table td {
+        padding: 6px 8px;
+        font-size: 17px;
+    }
+}

@@ -1,0 +1,259 @@
+body {
+    background-color: #f1f5f9;
+    padding: 0;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+.keeper-header {
+    background: #1e293b;
+    color: white;
+    padding: 25px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.keeper-header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    text-align: center;
+}
+
+.header-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.bulk-btn {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 15px 10px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    text-align: center;
+}
+
+.logout-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 15px 10px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    text-align: center;
+}
+
+.bulk-btn:active {
+    background: #4f46e5;
+    transform: scale(0.95);
+}
+
+.logout-btn:active {
+    background: #dc2626;
+    transform: scale(0.95);
+}
+
+.keeper-main {
+    padding: 30px 20px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.status-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.summary-box {
+    background: white;
+    border-radius: 20px;
+    padding: 25px 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.summary-box.out {
+    border-top: 10px solid #3b82f6;
+}
+
+.summary-box.early {
+    border-top: 10px solid #f97316;
+}
+
+.summary-box .label {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #334155;
+    word-break: keep-all;
+}
+
+.summary-box .count {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.summary-box .count span {
+    font-size: 3.5rem;
+    /* 숫자를 더 강조하되 상단 텍스트와 밸런스를 맞춤 */
+    color: inherit;
+    font-weight: 900;
+}
+
+.summary-box.out .count {
+    color: #1d4ed8;
+}
+
+.summary-box.early .count {
+    color: #c2410c;
+}
+
+.record-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 30px;
+}
+
+.record-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    border-top: 8px solid #ccc;
+    animation: slideUp 0.4s ease forwards;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.record-card.type-out {
+    border-color: #3b82f6;
+}
+
+.record-card.type-out .card-type {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.record-card.type-early {
+    border-color: #f97316;
+}
+
+.record-card.type-early .card-type {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-type {
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 1.6rem;
+    font-weight: 800;
+}
+
+.card-time {
+    font-size: 1.4rem;
+    color: #64748b;
+    font-weight: 700;
+}
+
+.card-profile {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 5px 0;
+}
+
+.student-photo {
+    width: 70px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 14px;
+    background-color: #f1f5f9;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.student-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-student {
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: #1e293b;
+    margin: 4px 0 0 0;
+}
+
+.card-class {
+    font-size: 1.8rem;
+    color: #475569;
+    font-weight: 700;
+}
+
+.card-detail {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #334155;
+    margin-top: 5px;
+    line-height: 1.5;
+    word-break: keep-all;
+}
+
+.loading-state,
+.empty-state {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #64748b;
+    padding: 150px 0;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}

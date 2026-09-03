@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Omni-Perspective | AI 학생 분석</title>
+    <link rel="stylesheet" href="src/css/main.css">
+    <link rel="stylesheet" href="src/css/analysis.css">
+    <link rel="stylesheet" href="src/css/analysis_board.css">
+    <link rel="stylesheet" href="src/css/record.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+    <script type="text/javascript">
+        (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "vqru6iwnq8");
+    </script>
+</head>
+
+<body>
+    <!-- 상단 버전 정보 -->
+    <!-- version-tag removed in v4.57 -->
+
+    <div class="analysis-dashboard">
+        <!-- 상단 헤더 영역 -->
+        <header class="header-row"
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 0 10px;">
+            <button class="btn btn-back" onclick="location.href='index.html'" aria-label="뒤로가기"
+                style="width: 44px; height: 44px; border-radius: 50%; border: 1px solid #e2e8f0; background: white; display: flex; align-items: center; justify-content: center; cursor: pointer;"></button>
+            <h2 id="pageTitle" class="dashboard-title"
+                style="margin:0; flex: 1; text-align: center; font-size: 1.25rem; font-weight: 800;">AI 인사이트 다이나믹스</h2>
+            <div style="width: 44px;"></div> <!-- 균형을 위한 빈 공간 -->
+        </header>
+
+        <!-- 통합 컨트롤 패널 -->
+        <section class="control-panel">
+            <!-- 1. 대상 모드 선택 -->
+            <div class="analysis-mode-toggle">
+                <label class="mode-radio">
+                    <input type="radio" name="analysis-mode" value="individual" checked>
+                    <span>👨‍🎓 개별 학생</span>
+                </label>
+                <label class="mode-radio">
+                    <input type="radio" name="analysis-mode" value="class">
+                    <span>🏫 학급 전체</span>
+                </label>
+            </div>
+
+            <!-- 2. 구체적 대상 검색/선택 -->
+            <div class="target-selection-area">
+                <div id="individual-search-container" class="search-container dual-search"
+                    style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px; display: flex; gap: 8px;">
+                        <div class="input-group"
+                            style="position: relative; flex: 1.5; display: flex; align-items: center;">
+                            <input type="text" id="search-id" placeholder="학번이나 이름을 입력하세요" class="search-input id-input"
+                                style="width: 100%; height: 48px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0;">
+                        </div>
+                        <input type="text" id="search-name" placeholder="검색 결과" class="search-input name-input" readonly
+                            style="flex: 1; height: 48px; background-color: #f1f5f9; cursor: default; text-align: center; border: 1px solid #e2e8f0; border-radius: 12px;">
+                    </div>
+                    <div style="display: flex; gap: 8px; width: 100%; margin-top: 4px;">
+                        <button id="search-apply-btn" class="action-btn"
+                            style="flex: 1.2; height: 50px; border-radius: 12px; font-weight: 800; font-size: 1.05rem; background: #4A90E2; color: white; border: none; box-shadow: 0 4px 6px rgba(74, 144, 226, 0.2);">🧠
+                            인공지능 분석</button>
+                        <button id="search-record-btn" class="action-btn"
+                            style="flex: 1; height: 50px; border-radius: 12px; font-weight: 800; font-size: 1.05rem; background: #ffffff; color: #0f52ba; border: 2px solid #0f52ba; box-shadow: 0 4px 6px rgba(15, 82, 186, 0.1);">📝
+                            생활기록</button>
+                    </div>
+                    <div id="search-results" class="search-results-dropdown" style="display: none;"></div>
+                </div>
+
+                <div id="class-select-container" class="search-container" style="display: none;">
+                    <select id="class-dropdown" class="styled-select">
+                        <option value="">분석할 학급을 선택하세요</option>
+                    </select>
+                    <button id="class-analyze-btn" class="action-btn" disabled>분석 시작</button>
+                </div>
+            </div>
+
+        </section>
+
+
+        <main id="analysis-content" class="analysis-main">
+            <!-- 초기 안내 화면 -->
+            <div id="welcome-view" class="empty-state">
+                <div class="empty-icon">🧠</div>
+                <h2>학생을 선택하여 분석을 시작하세요</h2>
+                <p>다양한 AI 렌즈를 통해 학생의 숨겨진 잠재력을 발견할 수 있습니다.</p>
+            </div>
+
+            <!-- 분석 로딩 화면 -->
+            <div id="loading-view" class="loading-container"
+                style="display: none; padding: 40px 20px; text-align: center;">
+                <h3 style="color:#4A90E2; margin-bottom: 20px;">제미나이 AI 심층 분석 중...</h3>
+
+                <div
+                    style="background:#e2e8f0; border-radius:12px; width:100%; height:20px; overflow:hidden; margin-bottom:12px; box-shadow:inset 0 2px 4px rgba(0,0,0,0.1);">
+                    <div id="ai-progress-bar"
+                        style="background:linear-gradient(90deg, #4A90E2, #6c5ce7); width:0%; height:100%; transition:width 0.4s ease-out; border-radius:12px;">
+                    </div>
+                </div>
+
+                <div
+                    style="display:flex; justify-content:space-between; color:#64748b; font-size:0.95rem; font-weight:bold;">
+                    <span id="ai-progress-text">학생 데이터 수집 중</span>
+                    <span id="ai-progress-percent">0%</span>
+                </div>
+            </div>
+
+            <!-- 실제 분석 결과가 들어갈 영역 -->
+            <div id="result-view" class="result-container" style="display: none;">
+                <!-- 상단 학생 프로필 요약 -->
+                <section class="student-header-card">
+                    <!-- 프로필 영역 -->
+                    <div id="student-profile-link" class="student-profile-link-content"
+                        style="display:flex; align-items:center; flex:1; cursor:pointer; gap:16px;">
+                        <div id="student-photo-mini" class="student-photo-mini"
+                            style="margin:0; border: 2px solid rgba(255,255,255,0.3);"></div>
+                        <div class="student-meta">
+                            <h2 id="view-student-name" style="margin:0 0 2px 0; font-size: 1.4rem;">이름</h2>
+                            <p id="view-student-info" style="margin:0; opacity:0.8; font-size: 0.95rem;">학번 정보</p>
+                        </div>
+                    </div>
+                    <!-- 액션 버튼 영역 -->
+                    <div id="header-action-area" style="display: flex; gap: 8px;">
+                        <!-- JS에서 버튼이 주입되거나 수동으로 추가 -->
+                    </div>
+                </section>
+
+                <!-- 렌즈별 결과 영역 (JS에서 전환함) -->
+                <div id="lens-content" class="lens-content-area"></div>
+            </div>
+        </main>
+
+        <!-- 플로팅 컨트롤 (학생 내비게이션) -->
+        <div class="floating-controls" id="student-nav-controls" style="display: none;">
+            <button id="prev-btn" title="이전 번호">
+                <svg viewBox="0 0 24 24">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+                </svg>
+            </button>
+            <button id="next-btn" title="다음 번호">
+                <svg viewBox="0 0 24 24">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- 3. 소유자 전용 배치 분석 (하단 이동) -->
+        <section id="owner-batch-panel" class="owner-batch-panel container-card"
+            style="display: none; margin-top: 40px; margin-bottom: 40px;">
+            <div class="panel-header">
+                <h3>👑 전체 학생 자동 분석 (배치 엔진)</h3>
+                <span class="status-badge" id="batch-status-badge">대기 중</span>
+            </div>
+            <div class="batch-controls">
+                <button id="batch-start-btn" class="batch-btn start">자동 분석 시작</button>
+                <button id="batch-stop-btn" class="batch-btn stop" disabled>중단</button>
+                <button id="batch-reset-key-btn" class="batch-btn" style="background:#64748b; color:white;">API 키
+                    재설정</button>
+            </div>
+            <div id="batch-progress-container" class="batch-progress-container" style="display: none;">
+                <div class="progress-info">
+                    <span id="batch-progress-text">미분석 학생 조회 중...</span>
+                    <span id="batch-progress-percent">0/0</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="batch-progress-bar" class="progress-bar-fill"></div>
+                </div>
+                <p id="batch-current-target" class="current-target">대상 확인 중...</p>
+
+                <!-- 18개 반 현황판 (학년별 3열, 반별 6행) -->
+                <div id="overall-status-board" class="overall-status-board" style="display: none; margin-top: 20px;">
+                    <h4 style="text-align:center; color:#475569; margin-bottom:12px; font-size:0.95rem;">📊 전교생 자동 분석
+                        현황판</h4>
+                    <div class="status-grid-container">
+                        <!-- 1학년 열 -->
+                        <div class="grade-column" id="grade-1-col">
+                            <div class="grade-title">1학년</div>
+                            <div class="class-slots" id="grade-1-slots"></div>
+                        </div>
+                        <!-- 2학년 열 -->
+                        <div class="grade-column" id="grade-2-col">
+                            <div class="grade-title">2학년</div>
+                            <div class="class-slots" id="grade-2-slots"></div>
+                        </div>
+                        <!-- 3학년 열 -->
+                        <div class="grade-column" id="grade-3-col">
+                            <div class="grade-title">3학년</div>
+                            <div class="class-slots" id="grade-3-slots"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script type="module" src="src/js/analysis.js"></script>
+</body>
+
+</html>
