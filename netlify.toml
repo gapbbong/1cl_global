@@ -26,3 +26,9 @@
   to = "/.netlify/functions/api/:splat"
   status = 200
   force = true
+
+# 학생 설문 짧은 링크: q.creat1324.com/f/<token> → 설문 폼 (survey-form.js가 경로에서 토큰 파싱)
+[[redirects]]
+  from = "/f/*"
+  to = "/survey-form.html"
+  status = 200

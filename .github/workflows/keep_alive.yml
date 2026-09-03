@@ -1,17 +1,27 @@
 name: Supabase Keep-Alive
 
+# Supabase 무료 플랜은 7일 무접속 시 프로젝트가 일시중지된다.
+# 5일마다 게이트웨이를 한 번 건드려 활성 상태를 유지한다. (키 불필요)
+#
+# 배포 후: 저장소 Settings → Secrets and variables → Actions → Variables 에
+#   SITE_URL = https://<your-netlify-site>.netlify.app  (또는 app.creat1324.com)
+# 를 추가하면 활성화된다. 없으면 스킵.
+
 on:
   schedule:
-    - cron: '0 3 */5 * *'   # 5일마다 (방학 중 무접속으로 프로젝트가 일시중지되는 것 방지)
+    - cron: '0 3 */5 * *'
   workflow_dispatch: {}
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: 게이트웨이 경유로 DB 한 번 건드리기 (키 불필요)
+      - name: 게이트웨이 ping
         run: |
+          if [ -z "${{ vars.SITE_URL }}" ]; then
+            echo "SITE_URL 변수 미설정 — 스킵"; exit 0
+          fi
           curl -sS -o /dev/null -w "HTTP %{http_code}\n" \
-            -X POST https://1cl.netlify.app/api/login \
+            -X POST "${{ vars.SITE_URL }}/api/login" \
             -H 'content-type: application/json' \
-            -d '{"email":"keepalive@noop.invalid"}'
+            -d '{"email":"keepalive@example.com","domain":"__ping__"}' || true
