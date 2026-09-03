@@ -74,7 +74,8 @@ vercel.com → **gapbbongs-projects → Domains → creat1324.com → DNS Record
 | Name | Type | Value | 비고 |
 | --- | --- | --- | --- |
 | `demo` | CNAME | `1cl-global.netlify.app` | ✅ 추가됨 |
-| `q` | CNAME | `1cl-global.netlify.app` | ✅ 추가됨 |
+| `q` | CNAME | `1cl-global.netlify.app` | ✅ 추가됨 (설문 단축링크 + `/start`) |
+| `signup` | CNAME | `1cl-global.netlify.app` | ✅ 추가됨 (셀프 학교개설) |
 | `<school>` | CNAME | `1cl-global.netlify.app` | 학교 추가 시마다 |
 
 - 기존 레코드(apex ALIAS→tistory, `www`, `praygroup`, `*` Vercel 자동관리 등)는 **그대로 둔다**.
@@ -121,7 +122,9 @@ Supabase 무료 플랜은 7일 무접속 시 일시중지. `.github/workflows/ke
 
 ## 이미 준비된 것
 
-- `netlify.toml` — 빌드/edge function/`/api/*`·`/f/*` 리다이렉트
+- `netlify.toml` — 빌드/edge function/`/api/*`·`/f/*`·`/start` 리다이렉트
 - `db/migrations/0001~0005` — 신규 Supabase(`ogbwvbuqwvuozxxhfalj`)에 **적용 완료**
 - storage 버킷 `student-photos`(공개)·`evidence-photos`(비공개) — 생성 완료
 - 데모 학교 `demo`(고교)·`hanbit`(중학교) — 생성 완료
+- Netlify `1cl-global` 배포, 도메인 `demo`·`q`·`signup`.creat1324.com + SSL — 완료
+- **셀프 학교개설**: `https://signup.creat1324.com` (또는 `.../start`) — 라이브

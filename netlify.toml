@@ -33,7 +33,11 @@
   to = "/survey-form.html"
   status = 200
 
-# 셀프 학교 개설: signup.creat1324.com 또는 아무 도메인/start → 개설 폼
+# 셀프 학교 개설: signup.creat1324.com 루트 및 아무 도메인/start → 개설 폼
+[[redirects]]
+  from = "https://signup.creat1324.com/"
+  to = "/signup.html"
+  status = 200
 [[redirects]]
   from = "/start"
   to = "/signup.html"
