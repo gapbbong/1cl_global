@@ -38,6 +38,7 @@
   from = "https://signup.creat1324.com/"
   to = "/signup.html"
   status = 200
+  force = true
 [[redirects]]
   from = "/start"
   to = "/signup.html"
