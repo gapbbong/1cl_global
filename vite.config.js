@@ -27,6 +27,7 @@ export default defineConfig({
         admin: resolve(__dirname, 'admin.html'),
         admin_console: resolve(__dirname, 'admin-console.html'),
         survey_form: resolve(__dirname, 'survey-form.html'),
+        signup: resolve(__dirname, 'signup.html'),
         calendar: resolve(__dirname, 'calendar.html'),
         room_search: resolve(__dirname, 'room-search.html'),
         print_report: resolve(__dirname, 'print-report.html'),

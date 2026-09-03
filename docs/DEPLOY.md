@@ -41,6 +41,7 @@ apex(`creat1324.com`)+`www` 는 티스토리 블로그, `praygroup`·`kit` 등 �
 | `AUTH_SIGNING_SECRET` | `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"` 로 생성 |
 | `VITE_PUBLIC_SUPABASE_URL` | `https://ogbwvbuqwvuozxxhfalj.supabase.co` |
 | `GEMINI_API_KEYS` | (선택, AI 분석용) |
+| `SIGNUP_CODE` | (선택) 설정하면 `/start` 셀프 개설 시 이 코드 필요. 미설정이면 누구나 개설 가능(시간당 20교 제한) |
 
 설정 후 **Deploys → Trigger deploy → Deploy project**.
 
@@ -86,7 +87,22 @@ nslookup demo.creat1324.com          # → 1cl-global.netlify.app
 curl -I https://demo.creat1324.com/api/survey/form   # → 400/200 (SSL 발급 후)
 ```
 
-## 4. 첫 학교 온보딩
+## 4. 학교 개설
+
+### 4-A. 셀프 개설 (선생님에게 링크 하나만 주기) — 권장
+
+선생님에게 줄 링크: **`https://signup.creat1324.com`** (또는 `https://q.creat1324.com/start`)
+
+- 폼에 학교주소·이름·급·학년/반·관리자 이메일 입력 → `POST /api/signup` → `bootstrap_school` 즉시 실행
+- 완료 화면에 콘솔 주소(`https://<domain>.creat1324.com/admin-console.html`)와 설문 링크 안내
+- 남용 방지: 도메인 예약어/중복 검사, honeypot, 시간당 20교 제한, `SIGNUP_CODE` 설정 시 코드 필요
+- **도메인 연결**: 셀프 개설은 DB만 만든다. `<domain>.creat1324.com` 접속·SSL은 운영자가
+  ① Vercel DNS `<domain>` CNAME → `1cl-global.netlify.app`  ② Netlify Add domain alias
+  를 해줘야 완성된다 (와일드카드 미지원 — 2-3 참고). 이 단계 자동화하려면 Cloudflare 앞단.
+
+`signup.creat1324.com` 도 학교 서브도메인과 동일하게 한 번 등록해두면 됨 (Vercel CNAME + Netlify alias).
+
+### 4-B. 운영자 CLI 개설
 
 ```bash
 node scripts/onboard.mjs <domain> "<학교명>" <학교급> <관리자이메일> "<관리자이름>" [학년수] [반수]

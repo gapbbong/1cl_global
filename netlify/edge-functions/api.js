@@ -12,6 +12,7 @@
  */
 
 import { surveyForm, surveySubmit, surveyPhoto } from '../lib/survey.mjs';
+import { signupSchool } from '../lib/signup.mjs';
 import { loadRoleContext, scopeStudentsQuery, filterBody, isPrivileged } from '../lib/rolefilter.mjs';
 
 const FILTERED_TABLES = new Set(['students', 'surveys', 'life_records']);
@@ -287,6 +288,14 @@ export default async (request) => {
         url.searchParams.get('token'), url.searchParams.get('sid'),
         request.headers.get('content-type'), await request.arrayBuffer(),
       );
+      return json(status, body);
+    }
+
+    // ---- POST /api/signup — 셀프 학교 개설 (무인증) ----
+    if (sub === 'signup' && method === 'POST') {
+      let b = {};
+      try { b = JSON.parse(await request.text() || '{}'); } catch {}
+      const { status, body } = await signupSchool(sbRest, b, env('SIGNUP_CODE') || '');
       return json(status, body);
     }
 

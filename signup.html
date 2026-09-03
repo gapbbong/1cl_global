@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>학교 개설 — 원클</title>
+  <link rel="icon" href="favicon.ico" />
+  <style>
+    :root{--p:#365cf5}
+    *{box-sizing:border-box}
+    body{margin:0;background:#f5f7fb;color:#172033;font:15px/1.6 -apple-system,"Malgun Gothic",Arial,sans-serif}
+    .wrap{max-width:520px;margin:0 auto;padding:32px 16px 64px}
+    .head{text-align:center;margin-bottom:22px}
+    .head h1{margin:8px 0 6px;font-size:22px}
+    .head p{color:#718096;margin:0;font-size:13px}
+    .card{background:#fff;border:1px solid #e5e9f0;border-radius:14px;padding:20px;margin-bottom:14px}
+    .field{margin:14px 0}
+    .field label{display:block;font-weight:700;margin-bottom:6px;font-size:14px}
+    .field .req{color:#d13b4f}
+    .field .hint{color:#718096;font-size:12px;margin-top:4px}
+    input,select{width:100%;border:1px solid #dfe4ec;border-radius:8px;padding:11px;font-size:15px;font-family:inherit;background:#fff}
+    .row2{display:flex;gap:10px}
+    .row2 > *{flex:1}
+    .domain-row{display:flex;align-items:stretch}
+    .domain-row input{border-radius:8px 0 0 8px;text-align:right}
+    .domain-row .suffix{display:flex;align-items:center;padding:0 12px;background:#eef1f6;border:1px solid #dfe4ec;border-left:0;border-radius:0 8px 8px 0;color:#5a677d;font-size:13px;white-space:nowrap}
+    .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+    .submit{width:100%;border:0;border-radius:10px;background:var(--p);color:#fff;font-size:16px;font-weight:700;padding:15px;cursor:pointer;margin-top:6px}
+    .submit:disabled{opacity:.55;cursor:default}
+    .err{color:#d13b4f;font-size:13px;margin-top:10px;text-align:center;min-height:18px}
+    .ok{text-align:center;padding:8px 4px}
+    .ok .big{font-size:46px}
+    .ok h2{margin:8px 0 4px;font-size:19px}
+    .linkbox{background:#f0f3fb;border:1px solid #dbe3f7;border-radius:10px;padding:12px 14px;margin:12px 0;text-align:left;word-break:break-all}
+    .linkbox b{display:block;font-size:12px;color:#5a677d;margin-bottom:2px;font-weight:700}
+    .linkbox a{color:var(--p);font-weight:700;text-decoration:none}
+    .steps{text-align:left;font-size:13px;color:#4a5568;margin:14px 0 0;padding-left:18px}
+    .steps li{margin:4px 0}
+    .note{font-size:12px;color:#8a94a6;text-align:center;margin-top:18px}
+  </style>
+</head>
+<body>
+  <div class="wrap" id="app">
+    <div class="head">
+      <h1>학교 개설</h1>
+      <p>학교 정보를 입력하면 관리자 콘솔이 즉시 만들어집니다.</p>
+    </div>
+    <div class="card" id="card">
+      <form id="f" autocomplete="off">
+        <div class="field">
+          <label>학교 주소(하위 도메인) <span class="req">*</span></label>
+          <div class="domain-row">
+            <input id="domain" placeholder="hanbit" maxlength="31" required />
+            <span class="suffix">.creat1324.com</span>
+          </div>
+          <div class="hint">영문 소문자로 시작 · 3~31자 · 소문자/숫자/하이픈</div>
+        </div>
+        <div class="field">
+          <label>학교 이름 <span class="req">*</span></label>
+          <input id="name" placeholder="한빛중학교" maxlength="60" required />
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>짧은 이름</label>
+            <input id="short_name" placeholder="한빛중" maxlength="20" />
+          </div>
+          <div class="field">
+            <label>학교급 <span class="req">*</span></label>
+            <select id="education_type" required>
+              <option value="">선택</option>
+              <option value="elem">초등학교</option>
+              <option value="middle">중학교</option>
+              <option value="high">고등학교</option>
+              <option value="college2">전문대(2년제)</option>
+              <option value="college4">대학교(4년제)</option>
+              <option value="kinder">유치원</option>
+            </select>
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>학년 수 <span class="req">*</span></label>
+            <input id="levels" type="number" min="1" max="12" value="3" required />
+          </div>
+          <div class="field">
+            <label>학년당 반 수 <span class="req">*</span></label>
+            <input id="classes" type="number" min="1" max="30" value="6" required />
+          </div>
+        </div>
+        <div class="hint" style="margin:-6px 4px 8px">나중에 콘솔에서 자유롭게 추가·삭제할 수 있어요.</div>
+        <div class="field">
+          <label>관리자 이름 <span class="req">*</span></label>
+          <input id="admin_name" placeholder="김담당" maxlength="40" required />
+        </div>
+        <div class="field">
+          <label>관리자 이메일 <span class="req">*</span></label>
+          <input id="admin_email" type="email" placeholder="teacher@hanbit.ms.kr" required />
+          <div class="hint">이 이메일로 콘솔에 로그인합니다. 학교에 제출하는 이메일과 같게 하세요.</div>
+        </div>
+        <div class="field" id="codeField" hidden>
+          <label>가입 코드</label>
+          <input id="code" placeholder="운영자에게 받은 코드" />
+        </div>
+        <div class="hp"><label>회사<input id="hp" tabindex="-1" autocomplete="off" /></label></div>
+        <button type="submit" class="submit" id="go">학교 만들기</button>
+        <div class="err" id="err"></div>
+      </form>
+    </div>
+    <p class="note">문의: 학교 담당 선생님 또는 서비스 운영자에게 연락하세요.</p>
+  </div>
+  <script type="module" src="src/js/signup.js"></script>
+</body>
+</html>

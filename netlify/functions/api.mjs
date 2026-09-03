@@ -20,6 +20,7 @@
  */
 import crypto from 'node:crypto';
 import { surveyForm, surveySubmit, surveyPhoto } from '../lib/survey.mjs';
+import { signupSchool } from '../lib/signup.mjs';
 import { loadRoleContext, scopeStudentsQuery, filterBody, isPrivileged } from '../lib/rolefilter.mjs';
 
 const FILTERED_TABLES = new Set(['students', 'surveys', 'life_records']);
@@ -274,6 +275,14 @@ export const handler = async (event) => {
         sbRest, SUPABASE_URL, SERVICE_KEY, qs.get('token'), qs.get('sid'),
         headers['content-type'], buf && (buf.buffer ? buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) : buf),
       );
+      return json(res.status, res.body);
+    }
+
+    // ---- POST /api/signup — 셀프 학교 개설 (무인증) ----
+    if (sub === 'signup' && method === 'POST') {
+      let b = {};
+      try { b = JSON.parse(event.body || '{}'); } catch {}
+      const res = await signupSchool(sbRest, b, process.env.SIGNUP_CODE || '');
       return json(res.status, res.body);
     }
 
