@@ -45,10 +45,12 @@ apex(`creat1324.com`)+`www` 는 티스토리 블로그, `praygroup`·`kit` 등 �
 설정 후 **Deploys → Trigger deploy → Clear cache and deploy**.
 
 ### 2-3. 도메인  (프로젝트 `1cl-global`)
-Netlify → **Domain management**:
-- **primary**: `demo.creat1324.com` (또는 아무 학교 서브도메인 하나)
+Netlify → **Domain management → Add a domain → Add a domain you already own**:
+- **primary**: `demo.creat1324.com` — "Add subdomain" 으로 추가 (apex/www 안 붙음)
 - **domain alias**: `q.creat1324.com`, 그리고 학교마다 `<school>.creat1324.com`
-- apex `creat1324.com` / `www` 는 **넣지 않는다** (티스토리 소유 → 인증서 발급이 계속 실패함)
+- apex `creat1324.com` / `www` 는 **절대 넣지 않는다** (티스토리 소유 → SAN 인증서 전체가 실패)
+- SSL: SSL/TLS certificate → **Verify DNS configuration** → **Provision certificate**
+  (DNS 전파 직후엔 몇 번 실패할 수 있음. Netlify가 자동 재시도하며 보통 수 분~30분 내 발급)
 
 **와일드카드 주의**: Netlify 무료 플랜은 `*.creat1324.com` 을 도메인으로 받지 않는다(입력 시 `*` 무시됨).
 → 학교를 온보딩할 때마다 2가지를 한다:
