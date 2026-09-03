@@ -38,13 +38,19 @@ GitHub  gapbbong/1cl_global  ──push──▶  Netlify (자동 빌드/배포)
 
 설정 후 **Deploys → Trigger deploy → Clear cache and deploy**.
 
-### 2-3. 도메인
-Netlify → **Domain management → Add a domain**:
-- `creat1324.com`
-- `*.creat1324.com` (와일드카드 — 각 학교 `<domain>.creat1324.com`)
-- (원한다면 `app.creat1324.com`, `q.creat1324.com` 도 추가하거나 와일드카드로 커버됨)
+### 2-3. 도메인  (프로젝트 `1cl-global` — 이미 추가됨)
+Netlify → **Domain management → Add a domain / Add domain alias**:
+- `creat1324.com` (primary) + `www.creat1324.com`
+- `demo.creat1324.com`, `q.creat1324.com` (도메인 alias)
 
-Netlify가 Let's Encrypt 와일드카드 SSL을 자동 발급 (DNS 3-2 완료 후 수 분).
+**와일드카드 주의**: Netlify 무료 플랜은 `*.creat1324.com` 을 도메인으로 받지 않는다(입력 시 `*` 무시됨).
+→ 새 학교를 온보딩할 때마다 그 학교 도메인 하나를 **Add domain alias** 로 등록해야
+   Let's Encrypt 인증서가 발급된다 (`scripts/onboard.mjs` 실행 시 안내 출력).
+   DNS 는 가비아의 와일드카드 CNAME(`*`) 하나로 이미 커버되므로 DNS 추가는 불필요.
+→ 와일드카드 SSL이 꼭 필요하면 (a) Netlify Pro($19/mo) 또는
+   (b) 앞단에 Cloudflare(무료, 프록시 + 와일드카드 SSL) 를 둔다.
+
+Netlify가 각 도메인에 Let's Encrypt SSL을 자동 발급 (DNS 3. 완료 후 수 분).
 
 ## 3. 가비아 DNS
 
@@ -53,11 +59,13 @@ Netlify가 Let's Encrypt 와일드카드 SSL을 자동 발급 (DNS 3-2 완료 �
 | 타입 | 호스트 | 값 | TTL |
 | --- | --- | --- | --- |
 | A | `@` | `75.2.60.5` | 600 |
-| CNAME | `*` | `<사이트이름>.netlify.app.` | 600 |
-| CNAME | `www` | `<사이트이름>.netlify.app.` | 600 |
+| CNAME | `www` | `1cl-global.netlify.app.` | 600 |
+| CNAME | `*` | `1cl-global.netlify.app.` | 600 |
 
-- `<사이트이름>` = Netlify가 준 기본 도메인 (예: `globalhub-1cl.netlify.app` — 끝에 `.` 포함).
-- 와일드카드 `*` CNAME 하나로 `demo.creat1324.com`, `q.creat1324.com`, 모든 학교 서브도메인이 처리됨.
+- 값 끝의 `.` 포함. 가비아 UI가 자동으로 붙이면 생략 가능.
+- 와일드카드 `*` CNAME 하나로 `demo.creat1324.com`, `q.creat1324.com`, 모든 학교 서브도메인의 **DNS** 가 처리됨
+  (단 SSL은 위 2-3 참고 — 학교마다 Netlify alias 등록 필요).
+- 가비아는 apex(`@`) 에 CNAME/ALIAS 불가 → A 레코드(`75.2.60.5`) 사용.
 - 전파: 보통 10분~1시간 (가비아 최대 24시간).
 
 확인:

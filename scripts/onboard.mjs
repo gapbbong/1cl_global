@@ -52,4 +52,8 @@ console.log(`    도메인     : ${domain}  →  https://${domain}.creat1324.com
 console.log(`    관리자     : ${adminEmail}  (이 이메일로 콘솔 로그인)`);
 console.log(`    콘솔       : https://${domain}.creat1324.com/admin-console.html`);
 console.log(`    설문 링크  : ${tk[0] ? `https://q.creat1324.com/f/${tk[0].token}` : '(없음)'}`);
+console.log(`\n  ⚠ Netlify 무료 플랜은 와일드카드 도메인을 지원하지 않습니다.`);
+console.log(`     새 학교 도메인을 한 번 등록해야 SSL이 발급됩니다:`);
+console.log(`     Netlify → 1cl-global → Domain management → Add domain alias → "${domain}.creat1324.com"`);
+console.log(`     (가비아 DNS의 와일드카드 CNAME(*)이 이미 있으면 DNS 추가는 불필요)`);
 console.log(`\n  다음: 콘솔 로그인 → 학년·반 확인 → 교사 등록 → 학생 명단(xlsx) 업로드 → 설문 QR 배포\n`);
