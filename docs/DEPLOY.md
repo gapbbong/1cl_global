@@ -1,13 +1,19 @@
-# 배포 — GitHub → Netlify 자동 배포 + 가비아 DNS
+# 배포 — GitHub → Netlify 자동 배포 + creat1324.com DNS
 
 ## 0. 개요
 
 ```
-GitHub  gapbbong/1cl_global  ──push──▶  Netlify (자동 빌드/배포)
+GitHub  gapbbong/1cl_global  ──push──▶  Netlify (자동 빌드/배포)  [프로젝트: 1cl-global]
                                           ├─ 정적: dist/  (vite build)
                                           ├─ /api/*  →  edge function (netlify/edge-functions/api.js)
-                                          └─ 도메인: *.creat1324.com  (가비아 DNS → Netlify)
+                                          └─ 도메인: <school>.creat1324.com  (Vercel DNS → Netlify)
 ```
+
+**⚠ DNS 위치**: `creat1324.com` 의 네임서버는 **가비아가 아니라 Vercel**(`ns1.vercel-dns.com`).
+등록기관만 가비아이고 DNS 레코드는 **Vercel 대시보드**(vercel.com → gapbbongs-projects →
+Domains → creat1324.com)에서 관리한다. 가비아 DNS 관리 패널에 넣는 값은 적용되지 않는다.
+apex(`creat1324.com`)+`www` 는 티스토리 블로그, `praygroup`·`kit` 등 다른 서비스도 이 도메인을
+공유 중이므로 **기존 레코드는 건드리지 말 것**.
 
 ## 1. GitHub 저장소
 
@@ -38,40 +44,40 @@ GitHub  gapbbong/1cl_global  ──push──▶  Netlify (자동 빌드/배포)
 
 설정 후 **Deploys → Trigger deploy → Clear cache and deploy**.
 
-### 2-3. 도메인  (프로젝트 `1cl-global` — 이미 추가됨)
-Netlify → **Domain management → Add a domain / Add domain alias**:
-- `creat1324.com` (primary) + `www.creat1324.com`
-- `demo.creat1324.com`, `q.creat1324.com` (도메인 alias)
+### 2-3. 도메인  (프로젝트 `1cl-global`)
+Netlify → **Domain management**:
+- **primary**: `demo.creat1324.com` (또는 아무 학교 서브도메인 하나)
+- **domain alias**: `q.creat1324.com`, 그리고 학교마다 `<school>.creat1324.com`
+- apex `creat1324.com` / `www` 는 **넣지 않는다** (티스토리 소유 → 인증서 발급이 계속 실패함)
 
 **와일드카드 주의**: Netlify 무료 플랜은 `*.creat1324.com` 을 도메인으로 받지 않는다(입력 시 `*` 무시됨).
-→ 새 학교를 온보딩할 때마다 그 학교 도메인 하나를 **Add domain alias** 로 등록해야
-   Let's Encrypt 인증서가 발급된다 (`scripts/onboard.mjs` 실행 시 안내 출력).
-   DNS 는 가비아의 와일드카드 CNAME(`*`) 하나로 이미 커버되므로 DNS 추가는 불필요.
-→ 와일드카드 SSL이 꼭 필요하면 (a) Netlify Pro($19/mo) 또는
-   (b) 앞단에 Cloudflare(무료, 프록시 + 와일드카드 SSL) 를 둔다.
+→ 학교를 온보딩할 때마다 2가지를 한다:
+   1. **Vercel DNS**: `<school>` `CNAME` → `1cl-global.netlify.app`
+   2. **Netlify**: Domain management → Add domain alias → `<school>.creat1324.com`
+   (`scripts/onboard.mjs` 실행 시 이 안내가 출력된다)
+→ 이 반복이 싫으면 (a) Netlify Pro($19/mo, 와일드카드 도메인) 또는
+   (b) creat1324.com 앞단에 Cloudflare(무료, 프록시 + 와일드카드 SSL).
 
-Netlify가 각 도메인에 Let's Encrypt SSL을 자동 발급 (DNS 3. 완료 후 수 분).
+Netlify가 각 도메인에 Let's Encrypt SSL을 자동 발급 (DNS 전파 후 수 분).
 
-## 3. 가비아 DNS
+## 3. Vercel DNS (creat1324.com)
 
-가비아 **My가비아 → 도메인 → DNS 정보 → DNS 관리**:
+vercel.com → **gapbbongs-projects → Domains → creat1324.com → DNS Records → Add**:
 
-| 타입 | 호스트 | 값 | TTL |
+| Name | Type | Value | 비고 |
 | --- | --- | --- | --- |
-| A | `@` | `75.2.60.5` | 600 |
-| CNAME | `www` | `1cl-global.netlify.app.` | 600 |
-| CNAME | `*` | `1cl-global.netlify.app.` | 600 |
+| `demo` | CNAME | `1cl-global.netlify.app` | ✅ 추가됨 |
+| `q` | CNAME | `1cl-global.netlify.app` | ✅ 추가됨 |
+| `<school>` | CNAME | `1cl-global.netlify.app` | 학교 추가 시마다 |
 
-- 값 끝의 `.` 포함. 가비아 UI가 자동으로 붙이면 생략 가능.
-- 와일드카드 `*` CNAME 하나로 `demo.creat1324.com`, `q.creat1324.com`, 모든 학교 서브도메인의 **DNS** 가 처리됨
-  (단 SSL은 위 2-3 참고 — 학교마다 Netlify alias 등록 필요).
-- 가비아는 apex(`@`) 에 CNAME/ALIAS 불가 → A 레코드(`75.2.60.5`) 사용.
-- 전파: 보통 10분~1시간 (가비아 최대 24시간).
+- 기존 레코드(apex ALIAS→tistory, `www`, `praygroup`, `*` Vercel 자동관리 등)는 **그대로 둔다**.
+- `*` 와일드카드는 Vercel이 자동관리(잠금)라 건드리지 않는다. 그래서 명시적 서브도메인 레코드가 필요.
+- Vercel DNS는 전파가 빠름(1~5분).
 
 확인:
 ```bash
-nslookup demo.creat1324.com     # → netlify.app 로 CNAME 되어야 함
-curl -I https://demo.creat1324.com   # → 200 (SSL 발급 후)
+nslookup demo.creat1324.com          # → 1cl-global.netlify.app
+curl -I https://demo.creat1324.com/api/survey/form   # → 400/200 (SSL 발급 후)
 ```
 
 ## 4. 첫 학교 온보딩
