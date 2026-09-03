@@ -42,7 +42,11 @@ apex(`creat1324.com`)+`www` 는 티스토리 블로그, `praygroup`·`kit` 등 �
 | `VITE_PUBLIC_SUPABASE_URL` | `https://ogbwvbuqwvuozxxhfalj.supabase.co` |
 | `GEMINI_API_KEYS` | (선택, AI 분석용) |
 
-설정 후 **Deploys → Trigger deploy → Clear cache and deploy**.
+설정 후 **Deploys → Trigger deploy → Deploy project**.
+
+> ⚠️ "Import from a .env file" 로 붙여넣으면 키 이름에서 글자가 누락될 수 있음
+> (`SUPABASE_URL`→`SUPABASE_RL` 등). 붙여넣은 뒤 **키 5개 이름을 눈으로 확인**하고,
+> 값이 의심되면 각 변수를 Edit 해서 값을 다시 붙여넣을 것.
 
 ### 2-3. 도메인  (프로젝트 `1cl-global`)
 Netlify → **Domain management → Add a domain → Add a domain you already own**:
