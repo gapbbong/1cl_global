@@ -49,6 +49,7 @@ const TABLE_RULES = {
   record_types:      { read: true,  write: ['POST', 'PATCH', 'DELETE'] },
   survey_schema:     { read: true,  write: ['POST', 'PATCH'] },
   form_tokens:       { read: true,  write: ['POST', 'PATCH', 'DELETE'] },
+  consents:          { read: true,  write: ['POST'] },
   students:          { read: true,  write: ['POST', 'PATCH', 'DELETE'] },
   teachers:          { read: true,  write: ['POST', 'PATCH', 'DELETE'] },
   surveys:           { read: true,  write: ['POST', 'PATCH'] },
@@ -72,7 +73,7 @@ const SCOPED_TABLES = new Set([
   'schools', 'school_units', 'roles', 'record_types', 'survey_schema', 'form_tokens',
   'students', 'teachers', 'surveys', 'life_records', 'record_comments',
   'custom_menus', 'student_insights', 'schedules', 'quiz_scores',
-  'preset_categories', 'class_record_counts',
+  'preset_categories', 'class_record_counts', 'consents',
 ]);
 
 const ADMIN_ONLY_WRITE = new Set([
@@ -268,7 +269,10 @@ export const handler = async (event) => {
     if (sub === 'survey/submit' && method === 'POST') {
       let b = {};
       try { b = JSON.parse(event.body || '{}'); } catch {}
-      const res = await surveySubmit(sbRest, b);
+      const res = await surveySubmit(sbRest, b, {
+        ipHash: ipHashOf(headers),
+        userAgent: headers['user-agent'] || '',
+      });
       return json(res.status, res.body);
     }
     if (sub === 'survey/photo' && method === 'POST') {
@@ -371,6 +375,55 @@ export const handler = async (event) => {
       return json(res.ok ? 200 : 502, res);
     }
 
+    // ---- 개인정보/컴플라이언스 (관리자 전용) ----
+    if (sub === 'logs' && method === 'GET') {
+      if ((session.role_key || session.role) !== 'admin') return json(403, { error: 'admin_only' });
+      const qs = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search);
+      const kind = qs.get('kind') === 'user' ? 'user_logs' : 'access_logs';
+      const timeCol = kind === 'access_logs' ? 'accessed_at' : 'created_at';
+      const limit = Math.min(500, parseInt(qs.get('limit'), 10) || 100);
+      let q = `${kind}?school_id=eq.${session.school_id}&select=*&order=${timeCol}.desc&limit=${limit}`;
+      if (qs.get('since')) q += `&${timeCol}=gte.${encodeURIComponent(qs.get('since'))}`;
+      const r = await sbRest(q);
+      return json(r.status, await r.json().catch(() => []));
+    }
+
+    if (sub === 'purge' && method === 'POST') {
+      if ((session.role_key || session.role) !== 'admin') return json(403, { error: 'admin_only' });
+      let b = {};
+      try { b = JSON.parse(event.body || '{}'); } catch {}
+      const fn = b.kind === 'logs' ? 'purge_old_access_logs' : 'purge_expired_data';
+      const dry = b.dry_run !== false;
+      const r = await sbRest(`rpc/${fn}`, {
+        method: 'POST',
+        body: JSON.stringify({ p_school: session.school_id, p_dry_run: dry }),
+      });
+      const out = await r.json().catch(() => ({}));
+      if (!dry && r.ok) audit(session.email, `PURGE ${fn}`, { target_type: JSON.stringify(out).slice(0, 120) });
+      return json(r.status, out);
+    }
+
+    if (sub === 'student-export' && method === 'GET') {
+      const qs = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search);
+      const pid = qs.get('pid') || '';
+      if (!/^[0-9a-f-]{36}$/i.test(pid)) return json(400, { error: 'bad_pid' });
+      const roleKey = session.role_key || session.role;
+      if (roleKey !== 'admin' && roleKey !== 'homeroom') return json(403, { error: 'forbidden' });
+      const [st, sv, lr, cs] = await Promise.all([
+        sbRest(`students?pid=eq.${pid}&school_id=eq.${session.school_id}&select=*`).then((r) => r.json()).catch(() => []),
+        sbRest(`surveys?student_pid=eq.${pid}&school_id=eq.${session.school_id}&select=*`).then((r) => r.json()).catch(() => []),
+        sbRest(`life_records?student_pid=eq.${pid}&school_id=eq.${session.school_id}&select=*`).then((r) => r.json()).catch(() => []),
+        sbRest(`consents?student_pid=eq.${pid}&school_id=eq.${session.school_id}&select=*`).then((r) => r.json()).catch(() => []),
+      ]);
+      if (!Array.isArray(st) || !st[0]) return json(404, { error: 'not_found' });
+      if (roleKey === 'homeroom' && session.homeroom && st[0].class_info !== session.homeroom) {
+        return json(403, { error: 'not_your_class' });
+      }
+      audit(session.email, `EXPORT student ${st[0].student_id || pid}`);
+      logAccess(headers, session, 'EXPORT student', st[0].student_id || pid);
+      return json(200, { student: st[0], surveys: sv, life_records: lr, consents: cs, exported_at: new Date().toISOString() });
+    }
+
     // ---- PostgREST passthrough ----
     if (sub.startsWith('rest/v1/')) {
       const restPath = sub.slice('rest/v1/'.length);        // "<table>" (no query — Netlify puts it in rawQuery)
@@ -403,6 +456,9 @@ export const handler = async (event) => {
         roleCtx = await loadRoleContext(sbRest, session.school_id, session.role_key || session.role);
         if (table === 'students') {
           scopedSearchStr = scopeStudentsQuery(scopedSearchStr, roleCtx.perms, session.role_key || session.role, session.homeroom);
+        }
+        if (/(student_pid|student_id|pid|contact|sensitive)=/.test(scopedSearchStr || '')) {
+          logAccess(headers, session, `READ ${table}`, scopedSearchStr);
         }
       }
 
@@ -463,11 +519,30 @@ export const handler = async (event) => {
   }
 };
 
-// fire-and-forget audit trail into user_logs (schema: teacher_email, page_path, action)
-function audit(email, action) {
+// fire-and-forget audit trail into user_logs
+function audit(email, action, extra = {}) {
   sbRest('user_logs', {
     method: 'POST',
     headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({ teacher_email: email, page_path: 'api-gateway', action }),
+    body: JSON.stringify({ teacher_email: email, page_path: 'api-gateway', action, result: 'ok', ...extra }),
+  }).catch(() => {});
+}
+
+function ipHashOf(headers) {
+  const ip = headers['x-nf-client-connection-ip']
+    || (headers['x-forwarded-for'] || '').split(',')[0].trim() || '0';
+  try { return crypto.createHash('sha256').update(`${ip}|${SIGNING_SECRET}`).digest('base64url').slice(0, 22); }
+  catch { return null; }
+}
+
+// 개인정보처리시스템 접속기록 (비동기)
+function logAccess(headers, session, actionType, detail) {
+  sbRest('access_logs', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({
+      school_id: session.school_id, teacher_email: session.email,
+      action_type: actionType, ip_hash: ipHashOf(headers), detail: (detail || '').slice(0, 300),
+    }),
   }).catch(() => {});
 }

@@ -42,6 +42,7 @@ const TABLE_RULES = {
   record_types:        { read: true,  write: ['POST', 'PATCH', 'DELETE'] },
   survey_schema:       { read: true,  write: ['POST', 'PATCH'] },
   form_tokens:         { read: true,  write: ['POST', 'PATCH', 'DELETE'] },
+  consents:            { read: true,  write: ['POST'] },
   students:            { read: true,  write: ['POST', 'PATCH', 'DELETE'] },
   teachers:            { read: true,  write: ['POST', 'PATCH', 'DELETE'] },
   surveys:             { read: true,  write: ['POST', 'PATCH'] },
@@ -66,7 +67,7 @@ const SCOPED_TABLES = new Set([
   'schools', 'school_units', 'roles', 'record_types', 'survey_schema', 'form_tokens',
   'students', 'teachers', 'surveys', 'life_records', 'record_comments',
   'custom_menus', 'student_insights', 'schedules', 'quiz_scores',
-  'preset_categories', 'class_record_counts',
+  'preset_categories', 'class_record_counts', 'consents',
 ]);
 
 // Mutations on these tables require the caller's role_key === 'admin'.
@@ -179,12 +180,34 @@ const json = (status, obj, extra = {}) =>
     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...extra },
   });
 
-function audit(email, action) {
+function audit(email, action, extra = {}) {
   sbRest('user_logs', {
     method: 'POST',
     headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({ teacher_email: email, page_path: 'api-gateway', action }),
+    body: JSON.stringify({ teacher_email: email, page_path: 'api-gateway', action, result: 'ok', ...extra }),
   }).catch(() => {});
+}
+
+// 접속지 정보(IP)는 원본 저장 안 함 — 서명 시크릿을 섞은 SHA-256 앞 22자만.
+async function ipHash(request) {
+  const ip = request.headers.get('x-nf-client-connection-ip')
+    || (request.headers.get('x-forwarded-for') || '').split(',')[0].trim() || '0';
+  try {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${ip}|${SIGNING_SECRET}`));
+    return bytesToB64url(new Uint8Array(buf)).slice(0, 22);
+  } catch { return null; }
+}
+
+// 개인정보처리시스템 접속기록: 민감 테이블 조회를 access_logs 에 남긴다(비동기).
+function logAccess(request, session, actionType, detail) {
+  ipHash(request).then((h) => sbRest('access_logs', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({
+      school_id: session.school_id, teacher_email: session.email,
+      action_type: actionType, ip_hash: h, detail: (detail || '').slice(0, 300),
+    }),
+  }).catch(() => {})).catch(() => {});
 }
 
 // ---------------------------------------------------------------------------
@@ -280,7 +303,10 @@ export default async (request) => {
     if (sub === 'survey/submit' && method === 'POST') {
       let b = {};
       try { b = JSON.parse(await request.text() || '{}'); } catch {}
-      const { status, body } = await surveySubmit(sbRest, b);
+      const { status, body } = await surveySubmit(sbRest, b, {
+        ipHash: await ipHash(request),
+        userAgent: request.headers.get('user-agent') || '',
+      });
       return json(status, body);
     }
     if (sub === 'survey/photo' && method === 'POST') {
@@ -390,6 +416,54 @@ export default async (request) => {
       return json(res.ok ? 200 : 502, res);
     }
 
+    // ---- 개인정보/컴플라이언스 (관리자 전용) ----
+    if (sub === 'logs' && method === 'GET') {
+      if ((session.role_key || session.role) !== 'admin') return json(403, { error: 'admin_only' });
+      const kind = url.searchParams.get('kind') === 'user' ? 'user_logs' : 'access_logs';
+      const timeCol = kind === 'access_logs' ? 'accessed_at' : 'created_at';
+      const limit = Math.min(500, parseInt(url.searchParams.get('limit'), 10) || 100);
+      let q = `${kind}?school_id=eq.${session.school_id}&select=*&order=${timeCol}.desc&limit=${limit}`;
+      const since = url.searchParams.get('since');
+      if (since) q += `&${timeCol}=gte.${encodeURIComponent(since)}`;
+      const r = await sbRest(q);
+      return json(r.status, await r.json().catch(() => []));
+    }
+
+    if (sub === 'purge' && method === 'POST') {
+      if ((session.role_key || session.role) !== 'admin') return json(403, { error: 'admin_only' });
+      let b = {};
+      try { b = JSON.parse(await request.text() || '{}'); } catch {}
+      const fn = b.kind === 'logs' ? 'purge_old_access_logs' : 'purge_expired_data';
+      const dry = b.dry_run !== false; // 기본 dry-run
+      const r = await sbRest(`rpc/${fn}`, {
+        method: 'POST',
+        body: JSON.stringify({ p_school: session.school_id, p_dry_run: dry }),
+      });
+      const out = await r.json().catch(() => ({}));
+      if (!dry && r.ok) audit(session.email, `PURGE ${fn}`, { target_type: JSON.stringify(out).slice(0, 120) });
+      return json(r.status, out);
+    }
+
+    if (sub === 'student-export' && method === 'GET') {
+      const pid = url.searchParams.get('pid') || '';
+      if (!/^[0-9a-f-]{36}$/i.test(pid)) return json(400, { error: 'bad_pid' });
+      const roleKey = session.role_key || session.role;
+      if (roleKey !== 'admin' && roleKey !== 'homeroom') return json(403, { error: 'forbidden' });
+      const [st, sv, lr, cs] = await Promise.all([
+        sbRest(`students?pid=eq.${pid}&school_id=eq.${session.school_id}&select=*`).then((r) => r.json()).catch(() => []),
+        sbRest(`surveys?student_pid=eq.${pid}&school_id=eq.${session.school_id}&select=*`).then((r) => r.json()).catch(() => []),
+        sbRest(`life_records?student_pid=eq.${pid}&school_id=eq.${session.school_id}&select=*`).then((r) => r.json()).catch(() => []),
+        sbRest(`consents?student_pid=eq.${pid}&school_id=eq.${session.school_id}&select=*`).then((r) => r.json()).catch(() => []),
+      ]);
+      if (!Array.isArray(st) || !st[0]) return json(404, { error: 'not_found' });
+      if (roleKey === 'homeroom' && session.homeroom && st[0].class_info !== session.homeroom) {
+        return json(403, { error: 'not_your_class' });
+      }
+      audit(session.email, `EXPORT student ${st[0].student_id || pid}`);
+      logAccess(request, session, 'EXPORT student', st[0].student_id || pid);
+      return json(200, { student: st[0], surveys: sv, life_records: lr, consents: cs, exported_at: new Date().toISOString() });
+    }
+
     // ---- PostgREST passthrough ----
     if (sub.startsWith('rest/v1/')) {
       const restPath = sub.slice('rest/v1/'.length);
@@ -424,6 +498,10 @@ export default async (request) => {
         roleCtx = await loadRoleContext(sbRest, session.school_id, session.role_key || session.role);
         if (table === 'students') {
           scopedSearchStr = scopeStudentsQuery(scopedSearchStr, roleCtx.perms, session.role_key || session.role, session.homeroom);
+        }
+        // 개인정보처리시스템 접속기록 — 특정 학생/설문/기록 조회일 때만(목록 폴링 제외)
+        if (/(student_pid|student_id|pid|contact|sensitive)=/.test(scopedSearchStr || '')) {
+          logAccess(request, session, `READ ${table}`, scopedSearchStr);
         }
       }
 

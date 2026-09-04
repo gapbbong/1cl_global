@@ -67,6 +67,7 @@ function render() {
           ${CONF.fields.filter((f) => (f.group || '') === g).map(fieldHtml).join('')}
         </div>`).join('')}
       ${CONF.consent && CONF.consent[lang] ? `<div class="card" style="font-size:13px;color:#647086">${esc(CONF.consent[lang])}</div>` : ''}
+      ${consentHtml()}
       <button type="submit" class="submit" id="sub">제출하기</button>
       <p class="err" id="ferr" style="text-align:center"></p>
     </form>`;
@@ -75,6 +76,26 @@ function render() {
   const photoInput = app.querySelector('input[type=file]');
   if (photoInput) photoInput.onchange = onPhoto;
   document.getElementById('f').onsubmit = submit;
+}
+
+function consentHtml() {
+  const pc = CONF.privacyConsent;
+  if (!pc || !pc.required) return '';
+  return `
+    <div class="card" style="border-color:#c9d6f2;background:#f6f9ff">
+      <div class="grp" style="margin-top:0">개인정보 수집·이용 동의 <span class="req">*</span></div>
+      <p style="font-size:13px;color:#4a5568;white-space:pre-wrap;margin:6px 0 12px">${esc(pc.text)}</p>
+      <div class="field" style="display:flex;gap:10px">
+        <div style="flex:1"><label>동의자 이름 <span class="req">*</span></label>
+          <input name="__consent_name" required placeholder="보호자 또는 학생 이름"></div>
+        <div style="width:130px"><label>관계</label>
+          <select name="__consent_role"><option value="guardian">보호자</option><option value="student">학생 본인</option></select></div>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-weight:700;margin-top:6px">
+        <input type="checkbox" name="__consent_ok" style="width:auto" required>
+        위 내용에 동의합니다
+      </label>
+    </div>`;
 }
 
 function fieldHtml(f) {
@@ -118,6 +139,15 @@ async function submit(e) {
   if (!/^\d{2,10}$/.test(sid)) { err.textContent = '학번을 숫자로 입력해 주세요.'; return; }
   if (!/^\d+-\w+$/.test(cls)) { err.textContent = '학년-반을 예: 1-1 형식으로 입력해 주세요.'; return; }
 
+  let consent = null;
+  const pc = CONF.privacyConsent;
+  if (pc && pc.required) {
+    if (!fd.get('__consent_ok')) { err.textContent = '개인정보 수집·이용에 동의해야 제출할 수 있습니다.'; return; }
+    const cname = String(fd.get('__consent_name') || '').trim();
+    if (!cname) { err.textContent = '동의자 이름을 입력해 주세요.'; return; }
+    consent = { agreed: true, version: pc.version, agent_name: cname, agent_role: fd.get('__consent_role') || 'guardian' };
+  }
+
   const answers = {};
   for (const f of CONF.fields) {
     if (f.type === 'photo') { if (photoUrl) answers[f.id] = photoUrl; continue; }
@@ -130,10 +160,10 @@ async function submit(e) {
   try {
     const r = await fetch(`${API}/survey/submit`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, student_id: sid, class_info: cls, name: answers.name, answers, lang }),
+      body: JSON.stringify({ token, student_id: sid, class_info: cls, name: answers.name, answers, lang, consent }),
     });
     const b = await r.json();
-    if (!r.ok) { err.textContent = ({ bad_student_id: '학번 형식 오류', bad_class: '학년-반 형식 오류', closed: '설문이 마감되었습니다.' }[b.error]) || '제출에 실패했습니다.'; btn.disabled = false; btn.textContent = '제출하기'; return; }
+    if (!r.ok) { err.textContent = ({ bad_student_id: '학번 형식 오류', bad_class: '학년-반 형식 오류', closed: '설문이 마감되었습니다.', consent_required: '개인정보 수집·이용 동의가 필요합니다.' }[b.error]) || '제출에 실패했습니다.'; btn.disabled = false; btn.textContent = '제출하기'; return; }
     app.innerHTML = `<div class="ok"><div class="big">✅</div><h2>제출되었습니다</h2><p>감사합니다. 창을 닫으셔도 됩니다.</p></div>`;
   } catch (ex) {
     err.textContent = '네트워크 오류: ' + ex.message;

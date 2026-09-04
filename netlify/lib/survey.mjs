@@ -25,12 +25,13 @@ export async function surveyForm(sbRest, token) {
   if (error) return { status: error === 'bad_token' ? 400 : 410, body: { error } };
 
   const [scR, schemaR] = await Promise.all([
-    sbRest(`schools?select=name,short_name,locale,theme&id=eq.${tok.school_id}&limit=1`),
+    sbRest(`schools?select=name,short_name,locale,theme,privacy&id=eq.${tok.school_id}&limit=1`),
     sbRest(`survey_schema?select=*&school_id=eq.${tok.school_id}&limit=1`),
   ]);
   const school = (await scR.json().catch(() => []))[0] || null;
   const schema = (await schemaR.json().catch(() => []))[0] || null;
   if (!school || !schema) return { status: 404, body: { error: 'not_configured' } };
+  const priv = school.privacy || {};
 
   const fields = (schema.fields || [])
     .filter((f) => !f.hidden)
@@ -38,21 +39,31 @@ export async function surveyForm(sbRest, token) {
     // strip server-only hints
     .map(({ mapTo, piiLevel, ...pub }) => pub);
 
+  const DEFAULT_CONSENT =
+    `${school.name}은(는) 학급 운영·상담을 위해 이 설문의 응답을 수집·이용합니다.\n`
+    + `수집 항목은 아래 문항과 같으며, 보유·이용 기간은 해당 학년도 종료 후 `
+    + `${priv.retention_years ?? 1}년입니다. 동의를 거부할 수 있으나, 이 경우 설문 제출이 제한됩니다.`;
+
   return {
     status: 200,
     body: {
       school: { name: school.name, short_name: school.short_name, locale: school.locale, theme: school.theme || {} },
       languages: schema.languages || ['ko'],
       consent: schema.consent || {},
+      privacyConsent: {
+        required: priv.consent_required !== false,
+        version: priv.consent_version || 1,
+        text: (priv.consent_text && priv.consent_text.trim()) || DEFAULT_CONSENT,
+      },
       classFilter: tok.class_filter || null,
       fields,
     },
   };
 }
 
-/** POST /api/survey/submit — { token, student_id, class_info?, name?, answers, lang } */
-export async function surveySubmit(sbRest, payload) {
-  const { token, student_id, class_info, answers } = payload || {};
+/** POST /api/survey/submit — { token, student_id, class_info?, name?, answers, lang, consent } */
+export async function surveySubmit(sbRest, payload, meta = {}) {
+  const { token, student_id, class_info, answers, consent } = payload || {};
   const { tok, error } = await resolveToken(sbRest, token);
   if (error) return { status: error === 'bad_token' ? 400 : 410, body: { error } };
 
@@ -63,13 +74,19 @@ export async function surveySubmit(sbRest, payload) {
   const cls = tok.class_filter || String(class_info || '').trim();
   if (!/^\d+-\w+$/.test(cls)) return { status: 400, body: { error: 'bad_class' } };
 
-  // school academic year + survey schema (for mapTo)
+  // school academic year + survey schema (for mapTo) + privacy(동의 필수 여부)
   const [scR, schemaR] = await Promise.all([
-    sbRest(`schools?select=academic_year&id=eq.${tok.school_id}&limit=1`),
+    sbRest(`schools?select=academic_year,privacy&id=eq.${tok.school_id}&limit=1`),
     sbRest(`survey_schema?select=fields&school_id=eq.${tok.school_id}&limit=1`),
   ]);
-  const year = ((await scR.json().catch(() => []))[0] || {}).academic_year || new Date().getFullYear();
+  const sch = (await scR.json().catch(() => []))[0] || {};
+  const year = sch.academic_year || new Date().getFullYear();
+  const priv = sch.privacy || {};
   const fields = ((await schemaR.json().catch(() => []))[0] || {}).fields || [];
+
+  if (priv.consent_required !== false && !(consent && consent.agreed)) {
+    return { status: 400, body: { error: 'consent_required' } };
+  }
 
   // find or create the student
   let stuR = await sbRest(
@@ -96,6 +113,22 @@ export async function surveySubmit(sbRest, payload) {
     headers: { Prefer: 'return=minimal' },
     body: JSON.stringify({ school_id: tok.school_id, student_pid: stu.pid, data: answers }),
   });
+
+  // 동의 이력 기록 (개인정보 수집·이용 동의)
+  if (consent && consent.agreed) {
+    await sbRest('consents', {
+      method: 'POST',
+      headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify({
+        school_id: tok.school_id, student_pid: stu.pid, student_ref: sid,
+        scope: 'survey', version: Number(consent.version) || (priv.consent_version || 1),
+        agreed: true,
+        agent_name: String(consent.agent_name || '').slice(0, 40) || null,
+        agent_role: consent.agent_role === 'student' ? 'student' : 'guardian',
+        ip_hash: meta.ipHash || null, user_agent: (meta.userAgent || '').slice(0, 200) || null,
+      }),
+    }).catch(() => {});
+  }
 
   // sync mapTo fields onto the student row (whitelist columns)
   const ALLOWED = new Set(['name', 'gender', 'contact', 'birth_date', 'address', 'instagram_id', 'middle_school', 'parent_contact', 'photo_url']);
