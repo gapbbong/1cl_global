@@ -9,6 +9,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { provisionConfig, canAutoProvision, provisionTenantDomain } from '../netlify/lib/provision.mjs';
 
 const envPath = path.resolve(process.cwd(), '.env');
 if (fs.existsSync(envPath)) {
@@ -52,9 +53,16 @@ console.log(`    도메인     : ${domain}  →  https://${domain}.creat1324.com
 console.log(`    관리자     : ${adminEmail}  (이 이메일로 콘솔 로그인)`);
 console.log(`    콘솔       : https://${domain}.creat1324.com/admin-console.html`);
 console.log(`    설문 링크  : ${tk[0] ? `https://q.creat1324.com/f/${tk[0].token}` : '(없음)'}`);
-console.log(`\n  ⚠ 도메인 연결 (Netlify 무료 플랜은 와일드카드 미지원 → 학교마다 2단계):`);
-console.log(`     1) Vercel DNS: vercel.com → creat1324.com → DNS Records → Add`);
-console.log(`        Name="${domain}"  Type=CNAME  Value=1cl-global.netlify.app`);
-console.log(`     2) Netlify: 1cl-global → Domain management → Add domain alias → "${domain}.creat1324.com"`);
-console.log(`     → 몇 분 뒤 https://${domain}.creat1324.com SSL 자동 발급`);
+
+const provCfg = provisionConfig((k) => process.env[k]);
+if (canAutoProvision(provCfg)) {
+  process.stdout.write('\n  도메인 자동 연결 중 (Vercel DNS + Netlify alias/SSL)… ');
+  const p = await provisionTenantDomain(domain, provCfg);
+  console.log(p.ok ? `완료 (dns:${p.dns}, alias:${p.alias}, ssl:${p.ssl || '-'})` : `실패: ${JSON.stringify(p)}`);
+  if (p.ok) console.log(`     → 2~5분 뒤 https://${domain}.creat1324.com SSL 발급`);
+} else {
+  console.log(`\n  ⚠ 도메인 수동 연결 (VERCEL_API_TOKEN 등 미설정 → 자동화 skip):`);
+  console.log(`     1) Vercel DNS: Name="${domain}" CNAME 1cl-global.netlify.app`);
+  console.log(`     2) Netlify 1cl-global → Add domain alias → "${domain}.creat1324.com" → Renew certificate`);
+}
 console.log(`\n  다음: 콘솔 로그인 → 학년·반 확인 → 교사 등록 → 학생 명단(xlsx) 업로드 → 설문 QR 배포\n`);

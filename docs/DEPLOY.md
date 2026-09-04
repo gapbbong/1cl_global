@@ -42,6 +42,15 @@ apex(`creat1324.com`)+`www` 는 티스토리 블로그, `praygroup`·`kit` 등 �
 | `VITE_PUBLIC_SUPABASE_URL` | `https://ogbwvbuqwvuozxxhfalj.supabase.co` |
 | `GEMINI_API_KEYS` | (선택, AI 분석용) |
 | `SIGNUP_CODE` | (선택) 설정하면 `/start` 셀프 개설 시 이 코드 필요. 미설정이면 누구나 개설 가능(시간당 20교 제한) |
+| `VERCEL_API_TOKEN` | (선택, 도메인 자동연결) vercel.com → Account Settings → Tokens |
+| `VERCEL_TEAM_ID` | (선택) creat1324.com 이 팀 소속이면 `team_...` id 또는 slug(`gapbbongs-projects`) |
+| `NETLIFY_API_TOKEN` | (선택) app.netlify.com → User settings → Applications → Personal access tokens |
+| `NETLIFY_SITE_ID` | (선택) `1cl-global` 사이트: Site configuration → General → Site information → **API ID** |
+
+> `VERCEL_API_TOKEN` + `NETLIFY_API_TOKEN` + `NETLIFY_SITE_ID` 3개가 모두 있으면
+> 셀프 개설(`/start`) 및 `onboard.mjs` 가 **도메인을 자동으로 연결**한다
+> (Vercel DNS CNAME 추가 → Netlify domain alias 추가 → SSL 재발급).
+> 없으면 학교 생성만 하고 수동 연결 안내를 준다.
 
 설정 후 **Deploys → Trigger deploy → Deploy project**.
 
@@ -97,11 +106,14 @@ curl -I https://demo.creat1324.com/api/survey/form   # → 400/200 (SSL 발급 �
 - 폼에 학교주소·이름·급·학년/반·관리자 이메일 입력 → `POST /api/signup` → `bootstrap_school` 즉시 실행
 - 완료 화면에 콘솔 주소(`https://<domain>.creat1324.com/admin-console.html`)와 설문 링크 안내
 - 남용 방지: 도메인 예약어/중복 검사, honeypot, 시간당 20교 제한, `SIGNUP_CODE` 설정 시 코드 필요
-- **도메인 연결**: 셀프 개설은 DB만 만든다. `<domain>.creat1324.com` 접속·SSL은 운영자가
-  ① Vercel DNS `<domain>` CNAME → `1cl-global.netlify.app`  ② Netlify Add domain alias
-  를 해줘야 완성된다 (와일드카드 미지원 — 2-3 참고). 이 단계 자동화하려면 Cloudflare 앞단.
+- **도메인 연결**:
+  - `VERCEL_API_TOKEN`·`NETLIFY_API_TOKEN`·`NETLIFY_SITE_ID` 설정 시 → **자동** (Vercel DNS CNAME +
+    Netlify alias + SSL 재발급). 완료 화면이 "2~5분 뒤 접속" 안내. Let's Encrypt 주 50건 제한 주의.
+  - 미설정 시 → 학교 생성만. 운영자가 ① Vercel DNS `<domain>` CNAME → `1cl-global.netlify.app`
+    ② Netlify Add domain alias → Renew certificate 수동 (2-3 참고).
+  - 관리자 콘솔 로그인 후 `POST /api/provision-domain` 으로 재시도 가능(자동화 자격증명 필요).
 
-`signup.creat1324.com` 도 학교 서브도메인과 동일하게 한 번 등록해두면 됨 (Vercel CNAME + Netlify alias).
+`signup.creat1324.com` 도 학교 서브도메인과 동일하게 한 번 등록해두면 됨 (Vercel CNAME + Netlify alias — 이미 완료).
 
 ### 4-B. 운영자 CLI 개설
 

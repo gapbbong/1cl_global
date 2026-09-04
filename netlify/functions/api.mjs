@@ -21,7 +21,10 @@
 import crypto from 'node:crypto';
 import { surveyForm, surveySubmit, surveyPhoto } from '../lib/survey.mjs';
 import { signupSchool } from '../lib/signup.mjs';
+import { provisionConfig, provisionTenantDomain } from '../lib/provision.mjs';
 import { loadRoleContext, scopeStudentsQuery, filterBody, isPrivileged } from '../lib/rolefilter.mjs';
+
+const lambdaEnv = (k) => process.env[k];
 
 const FILTERED_TABLES = new Set(['students', 'surveys', 'life_records']);
 
@@ -282,7 +285,7 @@ export const handler = async (event) => {
     if (sub === 'signup' && method === 'POST') {
       let b = {};
       try { b = JSON.parse(event.body || '{}'); } catch {}
-      const res = await signupSchool(sbRest, b, process.env.SIGNUP_CODE || '');
+      const res = await signupSchool(sbRest, b, process.env.SIGNUP_CODE || '', provisionConfig(lambdaEnv));
       return json(res.status, res.body);
     }
 
@@ -357,6 +360,15 @@ export const handler = async (event) => {
         return { statusCode: gr.status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }, body: gt };
       }
       return { statusCode: 429, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }, body: last || '{"error":{"message":"all keys rate limited"}}' };
+    }
+
+    // ---- POST /api/provision-domain — 관리자: 자기 학교 도메인 자동연결 재시도 ----
+    if (sub === 'provision-domain' && method === 'POST') {
+      if ((session.role_key || session.role) !== 'admin') return json(403, { error: 'admin_only' });
+      if (!session.domain) return json(409, { error: 'no_tenant' });
+      const res = await provisionTenantDomain(session.domain, provisionConfig(lambdaEnv));
+      audit(session.email, `PROVISION ${session.domain}`);
+      return json(res.ok ? 200 : 502, res);
     }
 
     // ---- PostgREST passthrough ----

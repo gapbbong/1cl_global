@@ -13,6 +13,7 @@
 
 import { surveyForm, surveySubmit, surveyPhoto } from '../lib/survey.mjs';
 import { signupSchool } from '../lib/signup.mjs';
+import { provisionConfig, provisionTenantDomain } from '../lib/provision.mjs';
 import { loadRoleContext, scopeStudentsQuery, filterBody, isPrivileged } from '../lib/rolefilter.mjs';
 
 const FILTERED_TABLES = new Set(['students', 'surveys', 'life_records']);
@@ -295,7 +296,7 @@ export default async (request) => {
     if (sub === 'signup' && method === 'POST') {
       let b = {};
       try { b = JSON.parse(await request.text() || '{}'); } catch {}
-      const { status, body } = await signupSchool(sbRest, b, env('SIGNUP_CODE') || '');
+      const { status, body } = await signupSchool(sbRest, b, env('SIGNUP_CODE') || '', provisionConfig(env));
       return json(status, body);
     }
 
@@ -377,6 +378,16 @@ export default async (request) => {
       return new Response(last || '{"error":{"message":"all keys rate limited"}}', {
         status: 429, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
       });
+    }
+
+    // ---- POST /api/provision-domain — 관리자: 자기 학교 도메인 자동연결 재시도 ----
+    if (sub === 'provision-domain' && method === 'POST') {
+      if ((session.role_key || session.role) !== 'admin') return json(403, { error: 'admin_only' });
+      if (!session.domain) return json(409, { error: 'no_tenant' });
+      const cfg = provisionConfig(env);
+      const res = await provisionTenantDomain(session.domain, cfg);
+      audit(session.email, `PROVISION ${session.domain}`);
+      return json(res.ok ? 200 : 502, res);
     }
 
     // ---- PostgREST passthrough ----

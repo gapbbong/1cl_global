@@ -9,6 +9,8 @@
  *  - 시간당 신규 학교 20개 초과 시 429
  */
 
+import { provisionTenantDomain, canAutoProvision } from './provision.mjs';
+
 const EDU = new Set(['elem', 'middle', 'high', 'college2', 'college4', 'kinder']);
 const DOMAIN_RE = /^[a-z][a-z0-9-]{2,30}$/;
 const RESERVED = new Set([
@@ -24,8 +26,9 @@ const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * @param {(p:string,o?:object)=>Promise<Response>} sbRest
  * @param {object} body { domain, name, education_type, admin_email, admin_name, levels?, classes?, short_name?, code?, hp? }
  * @param {string} requiredCode  SIGNUP_CODE (빈 문자열이면 코드 미요구)
+ * @param {object} [provCfg]  provisionConfig() 결과 — 있으면 도메인 자동연결 시도
  */
-export async function signupSchool(sbRest, body, requiredCode) {
+export async function signupSchool(sbRest, body, requiredCode, provCfg) {
   const b = body || {};
 
   if (b.hp) return { status: 200, body: { ok: true, school_id: null, domain: String(b.domain || '') } };
@@ -99,6 +102,12 @@ export async function signupSchool(sbRest, body, requiredCode) {
     surveyToken = ((await tR.json().catch(() => []))[0] || {}).token || null;
   }
 
+  // 도메인 자동 연결 (Vercel DNS + Netlify alias/SSL) — 자격증명 있을 때만
+  let provision = { attempted: false };
+  if (provCfg && canAutoProvision(provCfg)) {
+    provision = { attempted: true, ...(await provisionTenantDomain(domain, provCfg).catch((e) => ({ ok: false, detail: String((e && e.message) || e) }))) };
+  }
+
   return {
     status: 200,
     body: {
@@ -107,6 +116,7 @@ export async function signupSchool(sbRest, body, requiredCode) {
       domain,
       survey_token: surveyToken,
       admin_email: adminEmail,
+      provision,
     },
   };
 }

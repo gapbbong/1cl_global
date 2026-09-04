@@ -78,6 +78,18 @@ $('f').addEventListener('submit', async (ev) => {
 function showSuccess(b) {
   const consoleUrl = `https://${b.domain}.${ROOT}/admin-console.html`;
   const surveyUrl = b.survey_token ? `https://q.${ROOT}/f/${b.survey_token}` : null;
+
+  const p = b.provision || {};
+  let domainMsg;
+  if (p.attempted && p.ok) {
+    domainMsg = '도메인이 자동으로 연결되었습니다. <b>SSL 발급까지 보통 2~5분</b> 걸리니, 접속이 안 되면 잠시 후 새로고침해 주세요.';
+  } else if (p.attempted) {
+    domainMsg = '도메인 자동 연결에 실패한 항목이 있습니다. <b>운영자에게 문의</b>하시거나, 콘솔 로그인 후 다시 시도하세요.'
+      + (p.detail ? `<br><span style="font-size:11px;color:#a0a0a0">(${esc(p.detail)})</span>` : '');
+  } else {
+    domainMsg = '위 콘솔 주소는 <b>운영자가 도메인을 연결</b>한 뒤 접속할 수 있습니다. 운영자에게 학교 주소를 알려주세요.';
+  }
+
   $('card').innerHTML = `
     <div class="ok">
       <div class="big">🎉</div>
@@ -98,10 +110,7 @@ function showSuccess(b) {
         <li><b>설문 문항</b> 탭에서 문항 편집 후 QR·링크 배포</li>
       </ol>
 
-      <p class="note" style="margin-top:16px">
-        위 콘솔 주소는 SSL 발급까지 몇 분 걸릴 수 있습니다.
-        접속이 안 되면 잠시 후 다시 시도하거나 운영자에게 도메인 연결을 요청하세요.
-      </p>
+      <p class="note" style="margin-top:16px">${domainMsg}</p>
       <a href="${esc(consoleUrl)}" class="submit" style="display:block;text-align:center;text-decoration:none;margin-top:8px">콘솔로 이동</a>
     </div>`;
 }
