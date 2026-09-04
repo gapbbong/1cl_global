@@ -7,8 +7,15 @@
  *   (2) 이 테이블들은 role_key === 'admin' 만 쓰기 허용
  * 을 강제한다. 즉 이 화면의 버튼을 조작해도 남의 학교/권한은 못 건드린다.
  */
-import { supabase, verifySession } from './supabase.js';
+import { supabase, verifySession, getSessionToken } from './supabase.js';
 import { loadSchool } from './school.js';
+
+const API = `${location.origin}/api`;
+const apiGet = (path) => fetch(`${API}${path}`, { headers: { 'x-teacher-token': getSessionToken() } }).then((r) => r.json());
+const apiPost = (path, body) => fetch(`${API}${path}`, {
+  method: 'POST', headers: { 'x-teacher-token': getSessionToken(), 'Content-Type': 'application/json' },
+  body: JSON.stringify(body || {}),
+}).then((r) => r.json());
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const el = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
@@ -95,6 +102,7 @@ function renderShell() {
           <button data-tab="survey">설문 문항</button>
           <button data-tab="records">생활기록 항목</button>
           <button data-tab="students">학생 명단</button>
+          <button data-tab="privacy">개인정보</button>
           <button data-tab="_back" style="margin-top:20px;color:#647086">← 앱으로</button>
         </nav>
       </aside>
@@ -111,7 +119,7 @@ function renderShell() {
 
 function renderTab() {
   document.querySelectorAll('.ac-nav button').forEach((b) => b.classList.toggle('active', b.dataset.tab === TAB));
-  ({ school: tabSchool, units: tabUnits, teachers: tabTeachers, roles: tabRoles, survey: tabSurvey, records: tabRecords, students: tabStudents }[TAB] || tabSchool)();
+  ({ school: tabSchool, units: tabUnits, teachers: tabTeachers, roles: tabRoles, survey: tabSurvey, records: tabRecords, students: tabStudents, privacy: tabPrivacy }[TAB] || tabSchool)();
 }
 
 // ============================================================ 학교 설정
@@ -1038,6 +1046,121 @@ function renderPreview(classes, selClass) {
     toast(`${payload.length}명 반영되었습니다.`);
     reloadStudents();
   };
+}
+
+// ============================================================ 개인정보
+function tabPrivacy() {
+  const s = CFG.school;
+  const p = s.privacy || {};
+  const main = $('#ac-main');
+  main.innerHTML = `
+    <h1>개인정보</h1>
+    <p class="sub">보존기간·동의·접속기록·데이터 파기를 관리합니다. 자세한 근거는 저장소의 <code>docs/COMPLIANCE.md</code>.</p>
+
+    <div class="card">
+      <h2>정책 설정</h2>
+      <div class="grid2">
+        <div class="field"><label>학생 개인정보 보존기간 (학년도 종료 후 N년)</label>
+          <input id="p-ret" type="number" min="0" max="10" value="${esc(p.retention_years ?? 1)}"></div>
+        <div class="field"><label>접속기록 보존연수 (기본 1년, 민감/대규모 2년)</label>
+          <input id="p-log" type="number" min="1" max="5" value="${esc(p.access_log_years ?? 1)}"></div>
+        <div class="field"><label>개인정보처리자 (학교/부서)</label>
+          <input id="p-ctrl" value="${esc(p.controller_name || s.name)}"></div>
+        <div class="field"><label>개인정보 보호책임자</label>
+          <input id="p-dpo" value="${esc(p.dpo_name || '')}"></div>
+        <div class="field"><label>보호책임자 연락처</label>
+          <input id="p-dpoc" value="${esc(p.dpo_contact || '')}"></div>
+      </div>
+      <div class="checks" style="margin-top:8px">
+        <label><input type="checkbox" id="p-consent" ${p.consent_required !== false ? 'checked' : ''}> 설문 제출 전 개인정보 동의 필수</label>
+        <label><input type="checkbox" id="p-reads" ${p.log_reads !== false ? 'checked' : ''}> 민감정보 열람도 접속기록에 남김</label>
+        <label><input type="checkbox" id="p-purge" ${p.purge_enabled ? 'checked' : ''}> 보존기간 만료분 자동 파기 허용</label>
+      </div>
+      <div class="field" style="margin-top:10px"><label>동의 안내 문구 (비우면 기본 문구)</label>
+        <textarea id="p-text" rows="4" placeholder="비워두면 학교명·수집항목·보유기간을 자동으로 안내">${esc(p.consent_text || '')}</textarea></div>
+      <div class="dirty-bar">
+        <span class="note">동의 문구를 바꾸면 안내 버전이 올라가 재동의를 유도합니다.</span>
+        <button class="btn primary" id="p-save">정책 저장</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>데이터 파기</h2>
+      <p class="sub">먼저 "건수 확인"으로 대상을 점검한 뒤 실행하세요. 실행은 되돌릴 수 없습니다.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" id="pg-data-dry">만료 학생데이터 건수 확인</button>
+        <button class="btn danger" id="pg-data-run">만료 학생데이터 파기 실행</button>
+        <button class="btn" id="pg-log-dry">만료 접속기록 건수 확인</button>
+        <button class="btn danger" id="pg-log-run">만료 접속기록 파기 실행</button>
+      </div>
+      <pre id="pg-out" style="background:#f5f7fb;border:1px solid #e5e9f0;border-radius:8px;padding:10px;margin-top:10px;font-size:12px;white-space:pre-wrap;min-height:20px"></pre>
+    </div>
+
+    <div class="card">
+      <h2>접속기록 (개인정보처리시스템)</h2>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <button class="btn" id="lg-access">민감정보 열람 기록</button>
+        <button class="btn" id="lg-user">관리·쓰기 작업 기록</button>
+      </div>
+      <div id="lg-out" style="max-height:340px;overflow:auto;border:1px solid #e5e9f0;border-radius:8px"></div>
+    </div>`;
+
+  $('#p-save').onclick = async (ev) => {
+    ev.target.disabled = true;
+    const newText = $('#p-text').value.trim();
+    const bumpVer = newText !== (p.consent_text || '');
+    const privacy = {
+      ...p,
+      retention_years: Number($('#p-ret').value) || 0,
+      access_log_years: Number($('#p-log').value) || 1,
+      controller_name: $('#p-ctrl').value.trim(),
+      dpo_name: $('#p-dpo').value.trim(),
+      dpo_contact: $('#p-dpoc').value.trim(),
+      consent_required: $('#p-consent').checked,
+      log_reads: $('#p-reads').checked,
+      purge_enabled: $('#p-purge').checked,
+      consent_text: newText,
+      consent_version: (p.consent_version || 1) + (bumpVer ? 1 : 0),
+    };
+    const { error } = await supabase.from('schools').update({ privacy }).eq('id', s.id);
+    ev.target.disabled = false;
+    if (error) return toast(`저장 실패: ${error.message}`, true);
+    CFG.school.privacy = privacy;
+    toast('저장되었습니다.');
+    tabPrivacy();
+  };
+
+  const runPurge = async (kind, dry) => {
+    const out = $('#pg-out');
+    if (!dry && !(await confirmDialog('되돌릴 수 없습니다. 정말 파기할까요?'))) return;
+    out.textContent = '처리 중…';
+    const r = await apiPost('/purge', { kind, dry_run: dry });
+    out.textContent = JSON.stringify(r, null, 2);
+    if (!dry) toast('파기 완료');
+  };
+  $('#pg-data-dry').onclick = () => runPurge('data', true);
+  $('#pg-data-run').onclick = () => runPurge('data', false);
+  $('#pg-log-dry').onclick = () => runPurge('logs', true);
+  $('#pg-log-run').onclick = () => runPurge('logs', false);
+
+  const showLogs = async (kind) => {
+    const box = $('#lg-out');
+    box.innerHTML = '<div class="ac-loading">불러오는 중…</div>';
+    const rows = await apiGet(`/logs?kind=${kind}&limit=200`);
+    if (!Array.isArray(rows) || !rows.length) { box.innerHTML = '<p class="sub" style="padding:12px">기록 없음</p>'; return; }
+    const timeKey = kind === 'access' ? 'accessed_at' : 'created_at';
+    box.innerHTML = `<table style="width:100%;font-size:12px;border-collapse:collapse">
+      <thead><tr style="background:#f5f7fb"><th style="text-align:left;padding:6px">일시</th><th style="text-align:left;padding:6px">계정</th><th style="text-align:left;padding:6px">업무</th><th style="text-align:left;padding:6px">대상/상세</th><th style="text-align:left;padding:6px">IP(해시)</th></tr></thead>
+      <tbody>${rows.map((x) => `<tr style="border-top:1px solid #eef1f5">
+        <td style="padding:6px;white-space:nowrap">${esc((x[timeKey] || '').replace('T', ' ').slice(0, 19))}</td>
+        <td style="padding:6px">${esc(x.teacher_email || '')}</td>
+        <td style="padding:6px">${esc(x.action_type || x.action || '')}</td>
+        <td style="padding:6px">${esc(x.detail || x.target_id || x.target_type || '')}</td>
+        <td style="padding:6px;color:#8a94a6">${esc((x.ip_hash || '').slice(0, 10))}</td></tr>`).join('')}</tbody></table>`;
+  };
+  $('#lg-access').onclick = () => showLogs('access');
+  $('#lg-user').onclick = () => showLogs('user');
+  showLogs('access');
 }
 
 boot();
