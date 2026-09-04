@@ -56,12 +56,13 @@ async function netlifyAddAlias(fqdn, cfg) {
   const pt = await pr.text();
   if (!pr.ok) return { alias: 'error', aliasDetail: `${pr.status} ${pt.slice(0, 200)}` };
 
-  // 인증서 재발급 트리거 (모든 alias 포함하는 SAN 인증서 재생성)
-  let ssl = 'skipped';
+  // 인증서 재발급 트리거. domain_aliases PATCH 자체가 백그라운드 재발급을 큐잉하므로
+  // 여기서 실패해도(주로 DNS 미전파로 422) Netlify 가 알아서 재시도한다.
+  let ssl = 'queued';
   try {
     const cr = await fetch(`${base}/ssl`, { method: 'POST', headers: h });
-    ssl = cr.ok ? 'triggered' : `error ${cr.status}`;
-  } catch { ssl = 'error'; }
+    ssl = cr.ok ? 'provisioning' : (cr.status === 422 ? 'queued' : `retry_${cr.status}`);
+  } catch { ssl = 'queued'; }
   return { alias: 'ok', ssl };
 }
 
